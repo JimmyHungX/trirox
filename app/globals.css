@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+@import 'leaflet/dist/leaflet.css';
 @custom-variant dark (&:is(.dark *));
 .button-row {
   display: flex;
@@ -349,6 +350,9 @@
 .timer-live.hyrox-hud {
   background: #edf5f0;
 }
+.timer-live.map-view {
+  gap: 16px;
+}
 .timer-live-status {
   display: flex;
   align-items: center;
@@ -370,6 +374,134 @@
   background: var(--positive);
   box-shadow: 0 0 0 5px rgb(42 126 83 / 12%);
   animation: live-pulse 1.4s ease-in-out infinite;
+}
+.timer-view-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #e8efeb;
+}
+.timer-view-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  font-weight: 600;
+}
+.timer-view-tabs button.active {
+  background: var(--background) !important;
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgb(18 43 31 / 10%);
+}
+.route-map-shell {
+  position: relative;
+  width: 100%;
+  height: min(52dvh, 430px);
+  min-height: 330px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #e4ebe7;
+  text-align: left;
+}
+.route-map-canvas {
+  width: 100%;
+  height: 100%;
+  background: #e4ebe7;
+}
+.route-map-status,
+.route-map-summary {
+  position: absolute;
+  z-index: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgb(199 212 205 / 85%);
+  border-radius: 6px;
+  background: rgb(251 253 252 / 94%);
+  box-shadow: 0 2px 8px rgb(18 43 31 / 10%);
+  backdrop-filter: blur(8px);
+}
+.route-map-status {
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  padding: 8px 10px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 600;
+}
+.route-map-status[data-status='active'] {
+  color: var(--positive);
+}
+.route-map-status[data-status='denied'],
+.route-map-status[data-status='unavailable'],
+.route-map-status[data-status='error'] {
+  color: var(--destructive);
+}
+.route-map-summary {
+  bottom: 12px;
+  left: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 94px;
+  padding: 9px 11px;
+}
+.route-map-summary span {
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+.route-map-summary strong {
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.route-map-summary strong small {
+  color: var(--muted-foreground);
+  font-size: 11px;
+}
+.route-map-empty {
+  position: absolute;
+  inset: 0;
+  z-index: 450;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 28px 28px;
+  color: #65736c;
+  text-align: center;
+  pointer-events: none;
+}
+.route-map-empty strong {
+  color: var(--foreground);
+  font-size: 15px;
+}
+.route-map-empty span {
+  max-width: 250px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.route-map-shell .leaflet-control-attribution {
+  color: #5f6b65;
+  font-size: 9px;
+}
+.route-map-shell .leaflet-control-zoom {
+  margin-right: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-strong);
+}
+.route-map-shell .leaflet-control-zoom a {
+  color: var(--foreground);
 }
 .timer-segment {
   display: flex;

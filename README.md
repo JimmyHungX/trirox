@@ -46,14 +46,14 @@ flowchart LR
 
 ## 使用技術
 
-| 類型         | 技術／服務                                     | 用途                                                                   |
-| ------------ | ---------------------------------------------- | ---------------------------------------------------------------------- |
-| AI 模型      | 規則式訓練推薦引擎                             | 計算恢復狀態、標準化 ACWR、訓練干擾與保守調整；目前未呼叫外部生成式 AI |
-| 前端         | React 19、TypeScript、Vinext、Base UI、Framer Motion、dnd-kit、Lucide | PWA 介面、表單、圖示、拖曳手勢與彈簧動畫               |
-| 後端         | Vinext Server Functions、Cloudflare Workers    | Sites 版本提供 `/api/state`、資料驗證與儲存流程                        |
-| 資料儲存     | Cloudflare D1、Drizzle ORM、localStorage       | Sites 使用 D1；Vercel 使用瀏覽器本機資料                               |
-| 部署         | OpenAI Sites、Vercel                           | 提供開發預覽與公開 Web App 部署                                        |
-| 品質工具     | Node.js Test Runner、TypeScript、Oxlint、Oxfmt | 單元測試、型別檢查、程式檢查與格式化                                   |
+| 類型     | 技術／服務                                                                     | 用途                                                                   |
+| -------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| AI 模型  | 規則式訓練推薦引擎                                                             | 計算恢復狀態、標準化 ACWR、訓練干擾與保守調整；目前未呼叫外部生成式 AI |
+| 前端     | React 19、TypeScript、Vinext、Base UI、Framer Motion、dnd-kit、Leaflet、Lucide | PWA 介面、表單、GPS 路線地圖、圖示、拖曳手勢與彈簧動畫                 |
+| 後端     | Vinext Server Functions、Cloudflare Workers                                    | Sites 版本提供 `/api/state`、資料驗證與儲存流程                        |
+| 資料儲存 | Cloudflare D1、Drizzle ORM、localStorage                                       | Sites 使用 D1；Vercel 使用瀏覽器本機資料                               |
+| 部署     | OpenAI Sites、Vercel                                                           | 提供開發預覽與公開 Web App 部署                                        |
+| 品質工具 | Node.js Test Runner、TypeScript、Oxlint、Oxfmt                                 | 單元測試、型別檢查、程式檢查與格式化                                   |
 
 ## 安裝與執行
 
@@ -120,28 +120,31 @@ npm run build:vercel
 - HRV、ACWR、恢復分數和肌群負荷係數為暫定模型，需要運動科學校準與真實資料驗證。
 - 能力自動校正、因果歸因與比賽成績預測尚未完成；資料不足時介面會保留未知值，不產生假預測。
 - HYROX 與鐵人計時器目前只在前景工作，分段時間尚未持久化。
+- 跑步與單車的 GPS 路徑目前只保留於進行中的前景計時畫面，結束回報後尚未持久化；定位精度亦受裝置、瀏覽器權限與戶外訊號影響。
 - WebMCP 採功能偵測，仍需在完整支援該介面的瀏覽器進行正式相容性驗證。
-- 已完成 21 項核心演算法與輸入驗證測試；iPhone 實機和原生輔助使用測試仍待執行。
+- 已完成 23 項核心演算法與輸入驗證測試；iPhone 實機和原生輔助使用測試仍待執行。
 
 ## 第三方服務、資料與素材
 
-| 項目 | 來源 | 授權／使用方式 |
-| --- | --- | --- |
-| React / React DOM / React Server DOM | [react.dev](https://react.dev/) | MIT License |
-| Vinext | [cloudflare/vinext](https://github.com/cloudflare/vinext) | MIT License |
-| Drizzle ORM | [orm.drizzle.team](https://orm.drizzle.team/) | Apache License 2.0 |
-| Base UI、shadcn/ui 與相關 UI 元件 | [base-ui.com](https://base-ui.com/)、[ui.shadcn.com](https://ui.shadcn.com/) | MIT License；CVA 為 Apache License 2.0 |
-| Framer Motion | [motion.dev](https://motion.dev/) | MIT License |
-| dnd-kit | [dndkit.com](https://dndkit.com/) | MIT License |
-| Tailwind CSS、tailwind-merge、tw-animate-css | [tailwindcss.com](https://tailwindcss.com/)、各套件 npm metadata | MIT License |
-| Lucide Icons | [lucide.dev](https://lucide.dev/) | ISC License |
-| date-fns、Embla Carousel、Recharts | [date-fns.org](https://date-fns.org/)、[embla-carousel.com](https://www.embla-carousel.com/)、[recharts.org](https://recharts.org/) | MIT License |
-| Cloudflare Workers / D1 | [developers.cloudflare.com](https://developers.cloudflare.com/) | 依 Cloudflare 服務條款使用 |
-| OpenAI Sites | OpenAI Sites 專案服務 | 依 OpenAI 服務條款使用；僅作開發預覽 |
-| Vercel | [vercel.com](https://vercel.com/) | 依 Vercel 服務條款使用；公開部署 |
-| 訓練推薦模型 | 專案內 `lib/training.ts` 規則式實作 | 專案自有程式碼，未使用外部生成式 AI 模型或模型權重 |
-| 示範訓練資料 | 專案內建立的合成資料 | 專案擁有者建立，不含真實個人健康資料 |
-| 工程規格與 UI 參考圖 | `docs/` | 專案擁有者提供，僅供本專案實作使用 |
+| 項目                                         | 來源                                                                                                                                | 授權／使用方式                                                                 |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| React / React DOM / React Server DOM         | [react.dev](https://react.dev/)                                                                                                     | MIT License                                                                    |
+| Vinext                                       | [cloudflare/vinext](https://github.com/cloudflare/vinext)                                                                           | MIT License                                                                    |
+| Drizzle ORM                                  | [orm.drizzle.team](https://orm.drizzle.team/)                                                                                       | Apache License 2.0                                                             |
+| Base UI、shadcn/ui 與相關 UI 元件            | [base-ui.com](https://base-ui.com/)、[ui.shadcn.com](https://ui.shadcn.com/)                                                        | MIT License；CVA 為 Apache License 2.0                                         |
+| Framer Motion                                | [motion.dev](https://motion.dev/)                                                                                                   | MIT License                                                                    |
+| dnd-kit                                      | [dndkit.com](https://dndkit.com/)                                                                                                   | MIT License                                                                    |
+| Leaflet                                      | [leafletjs.com](https://leafletjs.com/)                                                                                             | BSD 2-Clause License                                                           |
+| OpenStreetMap 地圖圖磚與資料                 | [openstreetmap.org](https://www.openstreetmap.org/copyright)                                                                        | OpenStreetMap 資料採 ODbL；圖磚依其 Tile Usage Policy 使用並於地圖顯示來源標示 |
+| Tailwind CSS、tailwind-merge、tw-animate-css | [tailwindcss.com](https://tailwindcss.com/)、各套件 npm metadata                                                                    | MIT License                                                                    |
+| Lucide Icons                                 | [lucide.dev](https://lucide.dev/)                                                                                                   | ISC License                                                                    |
+| date-fns、Embla Carousel、Recharts           | [date-fns.org](https://date-fns.org/)、[embla-carousel.com](https://www.embla-carousel.com/)、[recharts.org](https://recharts.org/) | MIT License                                                                    |
+| Cloudflare Workers / D1                      | [developers.cloudflare.com](https://developers.cloudflare.com/)                                                                     | 依 Cloudflare 服務條款使用                                                     |
+| OpenAI Sites                                 | OpenAI Sites 專案服務                                                                                                               | 依 OpenAI 服務條款使用；僅作開發預覽                                           |
+| Vercel                                       | [vercel.com](https://vercel.com/)                                                                                                   | 依 Vercel 服務條款使用；公開部署                                               |
+| 訓練推薦模型                                 | 專案內 `lib/training.ts` 規則式實作                                                                                                 | 專案自有程式碼，未使用外部生成式 AI 模型或模型權重                             |
+| 示範訓練資料                                 | 專案內建立的合成資料                                                                                                                | 專案擁有者建立，不含真實個人健康資料                                           |
+| 工程規格與 UI 參考圖                         | `docs/`                                                                                                                             | 專案擁有者提供，僅供本專案實作使用                                             |
 
 完整的直接與間接套件版本記錄於 `package.json` 及 `package-lock.json`，各套件仍適用其發布者附帶的授權條款。
 
@@ -149,10 +152,10 @@ npm run build:vercel
 
 ## 團隊成員
 
-| 姓名       | 分工                               |
-| ---------- | ---------------------------------- |
+| 姓名   | 分工                       |
+| ------ | -------------------------- |
 | 洪宇駿 | 產品規劃、前後端開發與部署 |
-| 張凱勳 | UI／UX設計 |
+| 張凱勳 | UI／UX設計                 |
 
 ## License
 

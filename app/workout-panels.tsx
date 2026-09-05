@@ -12,6 +12,8 @@ import {
   Navigation,
   Watch,
   Square,
+  Gauge,
+  Map as MapIcon,
 } from 'lucide-react';
 import {
   type Workout,
@@ -27,8 +29,15 @@ import {
   generateWeek,
   addDays,
 } from '@/lib/training';
+import {
+  routeDistanceKm,
+  shouldRecordRoutePoint,
+  type GpsStatus,
+  type RoutePoint,
+} from '@/lib/route';
 import { Field, Choice, Range, Checks, SportIcon, Spark, Empty } from './ui';
 import { Confirm, type PanelProps } from './panels';
+import { RouteMap } from './route-map';
 export function WorkoutPanel(p: PanelProps) {
   const { state, panel, open } = p;
   const w = state.workouts.find((x) => x.id === panel.id);
@@ -733,9 +742,15 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
   const [running, setRunning] = useState(false),
     [elapsed, setElapsed] = useState(0),
     [laps, setLaps] = useState<{ name: string; seconds: number }[]>([]),
-    [mode, setMode] = useState(w?.sport === 'HYROX' ? 'hyrox' : 'standard');
+    [mode, setMode] = useState(w?.sport === 'HYROX' ? 'hyrox' : 'standard'),
+    [view, setView] = useState<'data' | 'map'>('data'),
+    [routePoints, setRoutePoints] = useState<RoutePoint[]>([]),
+    [gpsStatus, setGpsStatus] = useState<GpsStatus>('idle');
   const start = useRef(0),
     acc = useRef(0);
+  const routeEnabled =
+    mode !== 'hyrox' &&
+    (w?.sport === 'Run' || w?.sport === 'Bike' || mode === 'triathlon');
   useEffect(() => {
     if (!running) return;
     start.current = Date.now();
@@ -757,6 +772,41 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
   }, [running]);
+  useEffect(() => {
+    if (!running || !routeEnabled) return;
+    if (!navigator.geolocation) return;
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const point = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          timestamp: position.timestamp,
+        };
+        if (point.accuracy > 60) {
+          setGpsStatus('requesting');
+          return;
+        }
+        setGpsStatus('active');
+        setRoutePoints((current) => {
+          if (!shouldRecordRoutePoint(current.at(-1), point)) return current;
+          return [...current, point];
+        });
+      },
+      (error) => {
+        setGpsStatus(
+          error.code === error.PERMISSION_DENIED
+            ? 'denied'
+            : error.code === error.POSITION_UNAVAILABLE
+              ? 'unavailable'
+              : 'error',
+        );
+      },
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 },
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [routeEnabled, running]);
   if (!w) return <div className="panel-body">找不到課表</div>;
   const segments =
     mode === 'hyrox'
@@ -790,6 +840,17 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
   const activeSegment = segments[Math.min(laps.length, segments.length - 1)];
   const lapSeconds = laps.reduce((total, lap) => total + lap.seconds, 0);
   const segmentElapsed = Math.max(0, elapsed - lapSeconds);
+  const recordedDistanceKm = routeDistanceKm(routePoints);
+  const recordedDistance =
+    state.settings.units === 'mi'
+      ? recordedDistanceKm * 0.621371
+      : recordedDistanceKm;
+  const recordedDistanceUnit = state.settings.units === 'mi' ? 'mi' : 'km';
+  const begin = () => {
+    if (routeEnabled)
+      setGpsStatus(navigator.geolocation ? 'requesting' : 'unavailable');
+    setRunning(true);
+  };
   const pause = () => {
     acc.current += Math.floor((Date.now() - start.current) / 1000);
     setElapsed(acc.current);
@@ -844,7 +905,7 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
         <div className="preflight-status" aria-label="開始前連線狀態">
           <span>
             <Navigation size={17} />
-            {w.sport === 'HYROX' ? '室內計時模式' : 'GPS 待支援裝置定位'}
+            {routeEnabled ? '開始後啟用 GPS 路線' : '室內計時模式'}
           </span>
           <span>
             <Watch size={17} />
@@ -854,7 +915,7 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
         <button
           className="primary full timer-start-button"
           data-haptic="light"
-          onClick={() => setRunning(true)}
+          onClick={begin}
         >
           <Play size={27} fill="currentColor" />
           開始訓練
@@ -868,7 +929,9 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
 
   return (
     <div
-      className={`panel-body timer-live ${mode === 'hyrox' ? 'hyrox-hud' : ''}`}
+      className={`panel-body timer-live${
+        mode === 'hyrox' ? ' hyrox-hud' : ''
+      }${view === 'map' ? ' map-view' : ''}`}
     >
       <div className="timer-live-status">
         <span>
@@ -881,43 +944,91 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
             : sportNames[w.sport]}
         </span>
       </div>
-      <div className="timer-segment">
-        <span>當前分段</span>
-        <h2>
-          {laps.length >= segments.length ? '所有分段完成' : activeSegment}
-        </h2>
-      </div>
-      <output className="stopwatch" aria-label={`經過時間 ${clock(elapsed)}`}>
-        {clock(elapsed)}
-      </output>
-      <div className="timer-live-metrics">
-        <div>
-          <span>{mode === 'hyrox' ? '本段時間' : '即時距離'}</span>
-          <strong>{mode === 'hyrox' ? clock(segmentElapsed) : '—'}</strong>
-          <small>{mode === 'hyrox' ? '' : distanceUnit || 'km'}</small>
+      {routeEnabled && (
+        <div className="timer-view-tabs" role="tablist" aria-label="訓練畫面">
+          <button
+            role="tab"
+            aria-selected={view === 'data'}
+            className={view === 'data' ? 'active' : ''}
+            onClick={() => setView('data')}
+          >
+            <Gauge size={18} />
+            數據
+          </button>
+          <button
+            role="tab"
+            aria-selected={view === 'map'}
+            className={view === 'map' ? 'active' : ''}
+            onClick={() => setView('map')}
+          >
+            <MapIcon size={18} />
+            地圖
+          </button>
         </div>
-        <div>
-          <span>目標配速／強度</span>
-          <strong>{target.value}</strong>
-          <small>{target.unit}</small>
-        </div>
-      </div>
-      {elapsed > 0 && laps.length < segments.length && (
-        <button
-          className="primary full timer-segment-button"
-          data-haptic={mode === 'hyrox' ? 'medium' : 'light'}
-          onClick={completeSegment}
-        >
-          <Flag size={20} />
-          {mode === 'standard' ? '完成此段' : '下一分段'}
-        </button>
+      )}
+      {view === 'map' && routeEnabled ? (
+        <RouteMap
+          points={routePoints}
+          status={running ? gpsStatus : 'paused'}
+          distanceKm={recordedDistanceKm}
+          units={state.settings.units}
+        />
+      ) : (
+        <>
+          <div className="timer-segment">
+            <span>當前分段</span>
+            <h2>
+              {laps.length >= segments.length ? '所有分段完成' : activeSegment}
+            </h2>
+          </div>
+          <output
+            className="stopwatch"
+            aria-label={`經過時間 ${clock(elapsed)}`}
+          >
+            {clock(elapsed)}
+          </output>
+          <div className="timer-live-metrics">
+            <div>
+              <span>{mode === 'hyrox' ? '本段時間' : '即時距離'}</span>
+              <strong>
+                {mode === 'hyrox'
+                  ? clock(segmentElapsed)
+                  : routeEnabled && routePoints.length
+                    ? recordedDistance.toFixed(2)
+                    : '—'}
+              </strong>
+              <small>
+                {mode === 'hyrox'
+                  ? ''
+                  : routeEnabled
+                    ? recordedDistanceUnit
+                    : distanceUnit || 'km'}
+              </small>
+            </div>
+            <div>
+              <span>目標配速／強度</span>
+              <strong>{target.value}</strong>
+              <small>{target.unit}</small>
+            </div>
+          </div>
+          {elapsed > 0 && laps.length < segments.length && (
+            <button
+              className="primary full timer-segment-button"
+              data-haptic={mode === 'hyrox' ? 'medium' : 'light'}
+              onClick={completeSegment}
+            >
+              <Flag size={20} />
+              {mode === 'standard' ? '完成此段' : '下一分段'}
+            </button>
+          )}
+        </>
       )}
       <div className="timer-controls">
         <button
           className="secondary"
           data-haptic="light"
           disabled={laps.length >= segments.length}
-          onClick={() => (running ? pause() : setRunning(true))}
+          onClick={() => (running ? pause() : begin())}
         >
           {running ? <Pause size={21} /> : <Play size={21} />}
           {running ? '暫停' : '繼續'}
