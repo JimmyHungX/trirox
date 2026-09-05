@@ -145,6 +145,11 @@ export const model = {
     Rest: [0, 0, 0],
   } as Record<Sport, number[]>,
 };
+export function firstUseState(today = dayKey()) {
+  const state = seed(today);
+  state.onboardingDismissed = false;
+  return state;
+}
 export function load(log: Log) {
   return log.minutes * model.zone[log.zone];
 }

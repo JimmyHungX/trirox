@@ -3,11 +3,13 @@
 import { useMemo, useState } from 'react';
 import {
   Activity,
+  Apple,
   ArrowLeft,
   ArrowRight,
   Check,
   Flag,
   HeartPulse,
+  Mail,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -34,6 +36,13 @@ type Props = {
 
 const dayLabels = ['日', '一', '二', '三', '四', '五', '六'];
 const sportOptions: Sport[] = ['Run', 'Bike', 'Swim', 'HYROX'];
+const totalSteps = 8;
+const goalOptions: { value: 'none' | Race['type']; label: string }[] = [
+  { value: 'HYROX', label: 'HYROX' },
+  { value: 'Marathon', label: '馬拉松' },
+  { value: 'Triathlon', label: '鐵人三項' },
+  { value: 'none', label: '建立混合訓練習慣' },
+];
 
 export function Onboarding({ save, busy, error, onExplore }: Props) {
   const today = dayKey();
@@ -59,6 +68,7 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
   const [injuryPart, setInjuryPart] = useState<Part>('下肢');
   const [injuryNote, setInjuryNote] = useState('');
   const [excluded, setExcluded] = useState<Sport[]>([]);
+  const [accountNotice, setAccountNotice] = useState('');
 
   const trainingDays = useMemo(
     () =>
@@ -70,12 +80,16 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
   );
   const canContinue =
     step === 1
-      ? name.trim().length > 0 && (goal === 'none' || raceDate >= today)
+      ? name.trim().length > 0
       : step === 2
-        ? days.length > 0 && equipment.length > 0
+        ? goal === 'none' || raceDate >= today
         : step === 3
-          ? !hasInjury || injuryNote.trim().length > 0
-          : true;
+          ? days.length > 0
+          : step === 4
+            ? equipment.length > 0
+            : step === 6
+              ? !hasInjury || injuryNote.trim().length > 0
+              : true;
 
   async function finish() {
     const personal = seed(today, false);
@@ -141,21 +155,29 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
   return (
     <main className="onboarding-shell">
       <header className="onboarding-header">
-        <span className="wordmark">TRIROX</span>
-        {step > 0 && step < 4 && (
+        {step === 0 ? (
+          <span className="wordmark">TRIROX</span>
+        ) : (
           <button onClick={() => setStep(step - 1)} aria-label="上一步">
             <ArrowLeft size={21} />
           </button>
+        )}
+        {step > 0 && (
+          <span className="onboarding-step-count">
+            {step} / {totalSteps}
+          </span>
         )}
       </header>
       {step > 0 && (
         <div
           className="onboarding-progress"
-          aria-label={`設定進度 ${step} / 4`}
+          aria-label={`設定進度 ${step} / ${totalSteps}`}
         >
-          {[1, 2, 3, 4].map((n) => (
-            <i key={n} className={n <= step ? 'active' : ''} />
-          ))}
+          {Array.from({ length: totalSteps }, (_, index) => index + 1).map(
+            (n) => (
+              <i key={n} className={n <= step ? 'active' : ''} />
+            ),
+          )}
         </div>
       )}
       {error && <p className="onboarding-error">{error}</p>}
@@ -201,9 +223,9 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
 
       {step === 1 && (
         <section className="onboarding-step">
-          <span className="step-label">1 / 4 · 你的目標</span>
-          <h1>你正在為什麼準備？</h1>
-          <p>先決定主要方向，之後仍能在「我的賽事」修改。</p>
+          <span className="step-label">先認識你</span>
+          <h1>我們該怎麼稱呼你？</h1>
+          <p>這個名稱會出現在每日課表與訓練回顧中。</p>
           <div className="onboarding-form">
             <Field label="怎麼稱呼你">
               <input
@@ -211,20 +233,37 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
                 maxLength={80}
                 value={name}
                 placeholder="你的名字"
+                autoComplete="name"
                 onChange={(e) => setName(e.target.value)}
               />
             </Field>
-            <Choice
-              label="主要目標"
-              value={goal}
-              options={[
-                { value: 'HYROX', label: 'HYROX' },
-                { value: 'Marathon', label: '馬拉松' },
-                { value: 'Triathlon', label: '鐵人三項' },
-                { value: 'none', label: '先建立混合訓練習慣' },
-              ]}
-              onChange={(v) => setGoal(v as typeof goal)}
-            />
+          </div>
+        </section>
+      )}
+
+      {step === 2 && (
+        <section className="onboarding-step">
+          <span className="step-label">你的目標</span>
+          <h1>你正在為什麼準備？</h1>
+          <p>選一個主要方向，之後仍能在「我的賽事」修改。</p>
+          <div className="onboarding-form">
+            <fieldset className="onboarding-options">
+              <legend>主要目標</legend>
+              <div>
+                {goalOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={goal === option.value ? 'selected' : ''}
+                    aria-pressed={goal === option.value}
+                    onClick={() => setGoal(option.value)}
+                  >
+                    <span>{option.label}</span>
+                    <Check size={19} />
+                  </button>
+                ))}
+              </div>
+            </fieldset>
             {goal !== 'none' && (
               <Field label="賽事日期">
                 <input
@@ -239,11 +278,11 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
         </section>
       )}
 
-      {step === 2 && (
+      {step === 3 && (
         <section className="onboarding-step">
-          <span className="step-label">2 / 4 · 你的時間</span>
-          <h1>一週怎麼安排最實際？</h1>
-          <p>選你真的能做到的時間，計畫才有機會長久。</p>
+          <span className="step-label">你的時間</span>
+          <h1>哪些日子真的能練？</h1>
+          <p>從可持續的時間開始，之後再依恢復狀態調整。</p>
           <div className="onboarding-form">
             <Checks
               label="可訓練日"
@@ -251,16 +290,6 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
               values={days.map((d) => dayLabels[d])}
               onChange={(values) =>
                 setDays(values.map((v) => dayLabels.indexOf(v)))
-              }
-            />
-            <Checks
-              label="想納入的訓練"
-              options={sportOptions.map((s) => sportNames[s])}
-              values={equipment.map((s) => sportNames[s])}
-              onChange={(values) =>
-                setEquipment(
-                  sportOptions.filter((s) => values.includes(sportNames[s])),
-                )
               }
             />
             <Range
@@ -276,21 +305,49 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
         </section>
       )}
 
-      {step === 3 && (
+      {step === 4 && (
         <section className="onboarding-step">
-          <span className="step-label">3 / 4 · 能力與限制</span>
-          <h1>讓第一週更接近你。</h1>
+          <span className="step-label">訓練組合</span>
+          <h1>你想加入哪些運動？</h1>
+          <p>至少選一項，我們會在同一週內安排彼此不衝突的組合。</p>
+          <div className="onboarding-form">
+            <Checks
+              label="想納入的訓練"
+              options={sportOptions.map((s) => sportNames[s])}
+              values={equipment.map((s) => sportNames[s])}
+              onChange={(values) =>
+                setEquipment(
+                  sportOptions.filter((s) => values.includes(sportNames[s])),
+                )
+              }
+            />
+          </div>
+        </section>
+      )}
+
+      {step === 5 && (
+        <section className="onboarding-step">
+          <span className="step-label">目前能力</span>
+          <h1>你的訓練經驗到哪裡？</h1>
           <p>不確定的數字可以先略過，課表會從時間與體感強度開始。</p>
           <div className="onboarding-form">
-            <Choice
-              label="目前訓練程度"
-              value={level}
-              options={['初階', '中階', '進階'].map((v) => ({
-                value: v,
-                label: v,
-              }))}
-              onChange={setLevel}
-            />
+            <fieldset className="onboarding-options compact">
+              <legend>目前訓練程度</legend>
+              <div>
+                {['初階', '中階', '進階'].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className={level === option ? 'selected' : ''}
+                    aria-pressed={level === option}
+                    onClick={() => setLevel(option)}
+                  >
+                    <span>{option}</span>
+                    <Check size={18} />
+                  </button>
+                ))}
+              </div>
+            </fieldset>
             <div className="onboarding-toggle">
               <span>
                 <label htmlFor="show-baselines">我知道自己的能力數據</label>
@@ -341,6 +398,16 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
               unit="%"
               onChange={setConservative}
             />
+          </div>
+        </section>
+      )}
+
+      {step === 6 && (
+        <section className="onboarding-step">
+          <span className="step-label">身體限制</span>
+          <h1>現在有需要避開的動作嗎？</h1>
+          <p>限制會優先於訓練能力，沒有也可以直接繼續。</p>
+          <div className="onboarding-form">
             <div className="onboarding-toggle">
               <span>
                 <label htmlFor="has-injury">目前有傷病或動作限制</label>
@@ -391,9 +458,9 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
         </section>
       )}
 
-      {step === 4 && (
+      {step === 7 && (
         <section className="onboarding-step review-step">
-          <span className="step-label">4 / 4 · 準備完成</span>
+          <span className="step-label">確認設定</span>
           <h1>{name.trim()}，這是你的起點。</h1>
           <p>第一週會先採保守強度；每次回報後再逐步貼近你的狀態。</p>
           <div className="setup-summary">
@@ -424,24 +491,79 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
             </div>
           </div>
           <div className="privacy-note">
-            <Check size={18} /> 完成後會清除示範資料，建立你的個人課表與設定。
+            <Check size={18} /> 下一步登入後，才會清除示範資料並建立個人課表。
+          </div>
+        </section>
+      )}
+
+      {step === 8 && (
+        <section className="onboarding-step account-step">
+          <span className="step-label">登入與保存</span>
+          <h1>保存你的訓練計畫。</h1>
+          <p>登入後可在未來接續課表；目前展示版先安全地保存在這台裝置。</p>
+          <div className="account-providers">
+            <button
+              type="button"
+              className="account-provider"
+              onClick={() =>
+                setAccountNotice('Apple 登入需要先連接正式帳號服務。')
+              }
+            >
+              <Apple size={22} />
+              <span>
+                <strong>使用 Apple 登入</strong>
+                <small>尚未連接</small>
+              </span>
+              <ArrowRight size={19} />
+            </button>
+            <button
+              type="button"
+              className="account-provider"
+              onClick={() =>
+                setAccountNotice('Email 登入需要先連接正式帳號服務。')
+              }
+            >
+              <Mail size={22} />
+              <span>
+                <strong>使用 Email 登入</strong>
+                <small>尚未連接</small>
+              </span>
+              <ArrowRight size={19} />
+            </button>
+          </div>
+          {accountNotice && (
+            <p className="account-notice" role="status">
+              {accountNotice}
+            </p>
+          )}
+          <div className="privacy-note account-privacy">
+            <ShieldCheck size={19} />
+            <span>
+              本機體驗不會建立帳號或上傳登入資料。接入驗證服務前，可先將設定保存在目前瀏覽器。
+            </span>
           </div>
         </section>
       )}
 
       {step > 0 && (
         <footer className="onboarding-footer">
-          {step < 4 ? (
+          {step < totalSteps ? (
             <button
               className="primary full"
               disabled={!canContinue}
               onClick={() => setStep(step + 1)}
             >
-              繼續 <ArrowRight size={19} />
+              {step === 7 ? '繼續登入' : '繼續'} <ArrowRight size={19} />
             </button>
           ) : (
-            <button className="primary full" disabled={busy} onClick={finish}>
-              <Sparkles size={19} /> {busy ? '正在建立…' : '建立我的第一週課表'}
+            <button
+              className="primary full"
+              data-haptic="light"
+              disabled={busy}
+              onClick={finish}
+            >
+              <ShieldCheck size={19} />
+              {busy ? '正在建立…' : '先儲存在此裝置'}
             </button>
           )}
         </footer>

@@ -20,8 +20,9 @@
 
 - `CODEX_MASTER_INSTRUCTION.md`：Codex 6 的總指令
 - `DESIGN_SYSTEM.md`：完整 UI / design system 規範
+- `ONBOARDING_SPEC.md`：首次使用、個人化設定與登入銜接規範
 - `INTERACTION_SPEC.md`：全 App 互動手感與訓練計時畫面規範
-- `REFERENCE_MAPPING.md`：三張參考圖各自代表什麼
+- `REFERENCE_MAPPING.md`：四張參考圖各自代表什麼
 - `FUNCTIONS_AND_PAGES_TODO.md`：等待補上的功能與頁面清單
 - `references/01_today_final.png`
 - `references/02_plan_final.png`
@@ -35,7 +36,7 @@ TRIROX 不要做成 Garmin Connect、一般健身 Dashboard、卡片拼貼 App�
 要像：
 **Linear / Notion 的產品感 + 專業耐力運動資訊設計 + iOS 的克制感。**
 
-白底、黑白為主、低裝飾、強排版、精準留白、細分隔線、少量卡片。
+淺色底、深綠主操作、低裝飾、強排版、精準留白、細分隔線、少量卡片。
 
 所有 UI 修改都必須：
 1. 保留原本功能

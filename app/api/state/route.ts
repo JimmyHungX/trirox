@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:workers';
-import { seed, type AppState } from '@/lib/training';
+import { firstUseState, type AppState } from '@/lib/training';
 import { validState } from '@/lib/validation';
 const headers = { 'Cache-Control': 'no-store' };
 export async function GET(request: Request) {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     return Response.json(
       row
         ? { state: JSON.parse(row.payload), revision: row.revision }
-        : { state: seed(localDate), revision: -1 },
+        : { state: firstUseState(localDate), revision: -1 },
       { headers },
     );
   } catch {

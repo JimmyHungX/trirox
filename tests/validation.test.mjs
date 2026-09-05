@@ -1,12 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { seed } from '../lib/training.ts';
+import { firstUseState, seed } from '../lib/training.ts';
 import { validState } from '../lib/validation.ts';
 test('valid demo and empty personal records are accepted', () => {
   const demo = seed('2026-09-05');
   assert.equal(demo.onboardingDismissed, true);
   assert.equal(validState(demo), true);
   assert.equal(validState(seed('2026-09-05', false)), true);
+});
+test('first visit starts onboarding with valid demo data', () => {
+  const firstUse = firstUseState('2026-09-05');
+  assert.equal(firstUse.demo, true);
+  assert.equal(firstUse.onboardingDismissed, false);
+  assert.equal(validState(firstUse), true);
 });
 test('optional onboarding flags must be boolean', () => {
   const s = seed('2026-09-05', false);

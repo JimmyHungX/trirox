@@ -49,8 +49,8 @@ import {
   daysUntil,
   metrics,
   conflict,
+  firstUseState,
   load,
-  seed,
   sportNames,
   type AppState,
   type Workout,
@@ -165,7 +165,7 @@ export default function TrainingApp() {
       if (__TRIROX_STORAGE_MODE__ === 'local') {
         const stored = localStorage.getItem(localStateKey);
         const parsed = stored ? (JSON.parse(stored) as unknown) : null;
-        const next = validState(parsed) ? parsed : seed();
+        const next = validState(parsed) ? parsed : firstUseState();
         setState(next);
         setRevision(-1);
         return;
