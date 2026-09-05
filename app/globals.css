@@ -1171,6 +1171,83 @@ section {
 .page-title .muted {
   font-size: 13px;
 }
+.today-plan-shortcut {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 86px;
+  margin: 0 0 16px;
+  padding: 12px 12px 12px 14px !important;
+  border: 1px solid #c9ded1 !important;
+  border-radius: 8px;
+  background: #eaf4ee !important;
+  color: var(--foreground);
+  text-align: left;
+}
+.today-plan-shortcut > svg {
+  color: var(--primary);
+}
+.today-plan-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.today-plan-copy small {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+.today-plan-copy strong {
+  overflow: hidden;
+  color: #183328;
+  font-size: 16px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.today-plan-copy > span {
+  overflow: hidden;
+  color: #5d6b64;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.today-plan-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+}
+.today-plan-shortcut.is-restricted {
+  border-color: #ead8b8 !important;
+  background: #fbf5e9 !important;
+}
+.today-plan-shortcut.is-restricted .today-plan-copy small,
+.today-plan-shortcut.is-restricted > svg {
+  color: #8a5e18;
+}
+.today-plan-shortcut.is-restricted .today-plan-action {
+  background: #8a5e18;
+}
+.today-plan-shortcut.is-complete,
+.today-plan-shortcut.is-rest,
+.today-plan-shortcut.is-empty {
+  border-color: var(--border) !important;
+  background: #f7f8f7 !important;
+}
+.today-plan-shortcut.is-complete .today-plan-action,
+.today-plan-shortcut.is-rest .today-plan-action,
+.today-plan-shortcut.is-empty .today-plan-action {
+  background: #e5ebe7;
+  color: var(--primary);
+}
 .plan-summary {
   display: flex;
   align-items: center;
@@ -1257,6 +1334,12 @@ section {
   background: var(--accent);
   box-shadow: inset 3px 0 0 var(--primary);
 }
+.week-day.current {
+  padding-right: 8px;
+  padding-left: 8px;
+  background: var(--accent);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
 .day-label {
   display: flex;
   flex-direction: column;
@@ -1272,12 +1355,11 @@ section {
 .day-label span {
   font-size: 12px;
 }
-.day-label i {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--primary);
-  margin-top: 3px;
+.day-label .today-label {
+  margin-top: 2px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
 }
 .current .day-label {
   color: var(--primary);

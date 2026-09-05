@@ -156,7 +156,7 @@ function WeekDay({
       <div className="day-label">
         <strong>{Number(date.slice(-2))}</strong>
         <span>週{'日一二三四五六'[new Date(date + 'T12:00:00').getDay()]}</span>
-        {date === today && <i />}
+        {date === today && <span className="today-label">今天</span>}
       </div>
       <div>
         {workouts.length ? (
