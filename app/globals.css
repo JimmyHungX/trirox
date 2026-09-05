@@ -14,7 +14,7 @@
   margin-top: 18px;
 }
 .danger-link {
-  color: #bc4134 !important;
+  color: var(--destructive) !important;
   min-height: 44px;
   font-size: 14px;
 }
@@ -25,7 +25,7 @@
 }
 .form hr {
   border: 0;
-  border-top: 1px solid #e8e9eb;
+  border-top: 1px solid var(--border);
   margin: 4px 0;
 }
 .info-note {
@@ -34,9 +34,9 @@
   gap: 10px;
   padding: 16px !important;
   border-radius: 10px;
-  background: #f4f4f3 !important;
+  background: var(--muted) !important;
   font-size: 13px;
-  color: #707175;
+  color: var(--muted-foreground);
   line-height: 1.7;
   text-align: left;
 }
@@ -89,7 +89,7 @@
   flex-direction: column;
   gap: 10px;
   padding: 16px 0 calc(16px + env(safe-area-inset-bottom));
-  background: linear-gradient(to bottom, transparent, #fff 18%);
+  background: linear-gradient(to bottom, transparent, var(--background) 18%);
 }
 .workout-start-button {
   min-height: 72px !important;
@@ -169,7 +169,7 @@
   line-height: 1.5;
 }
 .review-summary {
-  border-left: 3px solid #111;
+  border-left: 3px solid var(--primary);
   padding: 6px 18px;
 }
 .review-summary h3 {
@@ -342,19 +342,19 @@
   padding: calc(28px + env(safe-area-inset-top)) 24px
     calc(24px + env(safe-area-inset-bottom));
   overflow-y: auto;
-  background: #111214;
-  color: white;
+  background: #f5f9f7;
+  color: var(--foreground);
   text-align: center;
 }
 .timer-live.hyrox-hud {
-  background: #050505;
+  background: #edf5f0;
 }
 .timer-live-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  color: #c7c9cc;
+  color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 600;
 }
@@ -367,8 +367,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #62d890;
-  box-shadow: 0 0 0 5px rgb(98 216 144 / 12%);
+  background: var(--positive);
+  box-shadow: 0 0 0 5px rgb(42 126 83 / 12%);
   animation: live-pulse 1.4s ease-in-out infinite;
 }
 .timer-segment {
@@ -378,7 +378,7 @@
   padding-top: 8px;
 }
 .timer-segment span {
-  color: #a8aaae;
+  color: var(--muted-foreground);
   font-size: 12px;
 }
 .timer-segment h2 {
@@ -398,20 +398,20 @@
 .timer-live-metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-top: 1px solid rgb(255 255 255 / 18%);
-  border-bottom: 1px solid rgb(255 255 255 / 18%);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 .timer-live-metrics > div {
   min-width: 0;
   padding: 20px 10px;
 }
 .timer-live-metrics > div + div {
-  border-left: 1px solid rgb(255 255 255 / 18%);
+  border-left: 1px solid var(--border);
 }
 .timer-live-metrics span,
 .timer-live-metrics small {
   display: block;
-  color: #a8aaae;
+  color: var(--muted-foreground);
   font-size: 11px;
 }
 .timer-live-metrics strong {
@@ -425,9 +425,10 @@
 .timer-live .timer-segment-button {
   min-height: 74px;
   border-radius: 10px;
-  background: #fff !important;
-  color: #090909 !important;
-  border-color: #fff !important;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 3px 0 rgb(25 79 55 / 22%);
   font-size: 17px;
 }
 .timer-controls {
@@ -437,25 +438,27 @@
 }
 .timer-live .secondary {
   min-height: 60px;
-  border-color: rgb(255 255 255 / 34%) !important;
-  background: transparent !important;
-  color: white !important;
+  border-color: var(--border-strong) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
 }
 .timer-live .timer-end {
-  color: #ff8b7f !important;
+  border-color: #ecc6c0 !important;
+  background: var(--destructive-soft) !important;
+  color: var(--destructive) !important;
 }
 .timer-laps {
   text-align: left;
 }
 .timer-laps .exercise-row {
-  border-color: rgb(255 255 255 / 18%);
+  border-color: var(--border);
 }
 .timer-laps .exercise-row span {
-  color: #d8d9db;
+  color: var(--muted-foreground);
 }
 .timer-footnote {
   margin-top: auto;
-  color: #8f9297;
+  color: var(--muted-foreground);
   font-size: 11px;
 }
 @keyframes live-pulse {
@@ -550,10 +553,10 @@ progress::-webkit-progress-bar {
   background: #eee;
 }
 progress::-webkit-progress-value {
-  background: #111;
+  background: var(--primary);
 }
 progress::-moz-progress-bar {
-  background: #111;
+  background: var(--primary);
 }
 @media (max-width: 390px) {
   .form-grid {
@@ -593,21 +596,26 @@ progress::-moz-progress-bar {
   --color-popover-foreground: var(--foreground);
   --color-border: var(--border);
   --color-input: var(--border);
-  --color-ring: #999;
-  --color-destructive: #c24435;
+  --color-ring: var(--primary);
+  --color-destructive: var(--destructive);
   --font-sans: var(--font-ui);
   --radius-lg: 12px;
 }
 :root {
-  --background: #fff;
-  --foreground: #111;
-  --primary: #111;
+  --background: #fbfdfc;
+  --foreground: #18241f;
+  --primary: #2c6e50;
   --primary-foreground: #fff;
-  --secondary: #f7f7f6;
-  --muted: #f4f4f4;
-  --muted-foreground: #6f7175;
-  --accent: #f2f2f2;
-  --border: #e8e9eb;
+  --secondary: #f1f5f3;
+  --muted: #f2f6f4;
+  --muted-foreground: #68756e;
+  --accent: #e4f0e9;
+  --border: #dbe4df;
+  --border-strong: #c7d4cd;
+  --positive: #2a7e53;
+  --warning: #a46616;
+  --destructive: #b4473b;
+  --destructive-soft: #fff2ef;
   --radius: 12px;
   --font-ui:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC',
@@ -618,7 +626,7 @@ progress::-moz-progress-bar {
   letter-spacing: 0;
 }
 html {
-  background: #f5f5f5;
+  background: #e9efec;
   font-size: 16px;
 }
 body {
@@ -660,7 +668,7 @@ a:active,
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #111;
+  outline: 2px solid var(--primary);
   outline-offset: 4px;
 }
 a {
@@ -711,14 +719,14 @@ textarea {
   min-width: 0;
   min-height: 48px;
   border: 1px solid var(--border);
-  background: #f9f9f9;
+  background: #f7faf8;
   border-radius: 10px;
   padding: 12px;
   outline: none;
 }
 input:focus,
 textarea:focus {
-  border-color: #111;
+  border-color: var(--primary);
 }
 textarea {
   min-height: 90px;
@@ -728,7 +736,7 @@ textarea {
   width: 100%;
   max-width: 500px;
   min-height: 100dvh;
-  background: white;
+  background: var(--background);
   margin: auto;
   padding: env(safe-area-inset-top) 32px
     calc(100px + env(safe-area-inset-bottom));
@@ -828,6 +836,10 @@ section {
   aspect-ratio: 1;
   width: 158px;
   flex-shrink: 0;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
 }
 .ring svg {
   width: 100%;
@@ -908,13 +920,13 @@ section {
   background: currentColor;
 }
 .positive {
-  color: #238455;
+  color: var(--positive);
 }
 .warning {
-  color: #a46616;
+  color: var(--warning);
 }
 .critical {
-  color: #c24435;
+  color: var(--destructive);
 }
 .neutral,
 .muted {
@@ -1027,14 +1039,14 @@ section {
   left: 0;
   width: 8px;
   height: 8px;
-  border: 1.5px solid #777;
+  border: 1.5px solid var(--muted-foreground);
   border-radius: 50%;
-  background: white;
+  background: var(--background);
   z-index: 1;
 }
 .dot.done {
-  background: #111;
-  border-color: #111;
+  background: var(--primary);
+  border-color: var(--primary);
 }
 .workout-row:not(:last-child):before {
   content: '';
@@ -1055,7 +1067,7 @@ section {
 }
 .quick-tile {
   padding: 20px !important;
-  border: 1px solid #e3e4e5 !important;
+  border: 1px solid var(--border) !important;
   border-radius: 14px;
   text-align: left;
   min-width: 0;
@@ -1086,7 +1098,7 @@ section {
   gap: 6px;
 }
 .quick-tile .race-name {
-  color: #111;
+  color: var(--foreground);
   font-weight: 500;
 }
 .countdown {
@@ -1113,7 +1125,7 @@ section {
   transform: translateX(-50%);
   width: 100%;
   max-width: 500px;
-  background: rgba(255, 255, 255, 0.97);
+  background: rgb(251 253 252 / 97%);
   border-top: 1px solid var(--border);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1131,7 +1143,7 @@ section {
   min-height: 56px;
 }
 .bottom-nav a.active {
-  color: #111;
+  color: var(--primary);
 }
 .bottom-nav i {
   height: 4px;
@@ -1140,7 +1152,7 @@ section {
   background: transparent;
 }
 .bottom-nav .active i {
-  background: #111;
+  background: var(--primary);
 }
 .page-title {
   display: flex;
@@ -1201,10 +1213,10 @@ section {
   background: #eaeaea;
 }
 .phase-track .active {
-  color: #111;
+  color: var(--primary);
 }
 .phase-track .active i {
-  background: #111;
+  background: var(--primary);
 }
 .weekly-section .section-head {
   margin-bottom: 12px;
@@ -1248,11 +1260,11 @@ section {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #111;
+  background: var(--primary);
   margin-top: 3px;
 }
 .current .day-label {
-  color: #111;
+  color: var(--primary);
 }
 .week-workout {
   display: flex;
@@ -1265,7 +1277,7 @@ section {
   border-bottom: 1px solid var(--border) !important;
 }
 .current .week-workout {
-  background: #f5f5f4;
+  background: var(--accent);
   border-radius: 10px;
   border-bottom: 0 !important;
 }
@@ -1425,7 +1437,7 @@ section {
   border-radius: 4px 4px 0 0;
 }
 .bars .current {
-  background: #111;
+  background: var(--primary);
 }
 .bars small {
   position: absolute;
@@ -1438,7 +1450,7 @@ section {
   color: #888;
 }
 .insight {
-  background: #f5f5f4;
+  background: var(--muted);
   padding: 24px;
   border-radius: 12px;
   position: relative;
@@ -1595,7 +1607,7 @@ section {
 }
 .profile-race .days small {
   font-size: 14px;
-  color: #111;
+  color: var(--foreground);
 }
 .list-row {
   display: flex;
@@ -1647,15 +1659,15 @@ section {
   line-height: 1.5;
 }
 .primary {
-  background: #111 !important;
-  color: #fff !important;
-  border: 1px solid #111 !important;
-  box-shadow: 0 3px 0 rgb(0 0 0 / 22%);
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border: 1px solid var(--primary) !important;
+  box-shadow: 0 3px 0 rgb(25 79 55 / 22%);
 }
 .secondary {
-  border: 1px solid #d6d6d6 !important;
-  background: #fff !important;
-  box-shadow: 0 2px 0 rgb(0 0 0 / 7%);
+  border: 1px solid var(--border-strong) !important;
+  background: var(--background) !important;
+  box-shadow: 0 2px 0 rgb(25 79 55 / 7%);
 }
 .primary:not(:disabled):active,
 .secondary:not(:disabled):active {
@@ -1687,7 +1699,7 @@ section {
   margin: auto;
   border-radius: 22px 22px 0 0;
   gap: 0;
-  background: #fff;
+  background: var(--background);
   padding-bottom: env(safe-area-inset-bottom);
   overflow: hidden;
 }
@@ -1738,7 +1750,7 @@ section {
   width: 100%;
   height: 48px;
   font-size: 16px;
-  background: #f9f9f9;
+  background: #f7faf8;
   padding: 12px;
 }
 .range-field {
@@ -1789,8 +1801,8 @@ section {
 .error-banner,
 .panel-error {
   font-size: 14px;
-  color: #a13c31;
-  background: #fff3f1;
+  color: var(--destructive);
+  background: var(--destructive-soft);
   padding: 12px;
   border-radius: 10px;
   margin-bottom: 18px;
@@ -1811,7 +1823,7 @@ section {
   max-width: calc(100% - 40px);
   padding: 14px 22px;
   border-radius: 12px;
-  background: #111;
+  background: #225940;
   color: white;
   z-index: 80;
   font-size: 14px;
@@ -2108,10 +2120,10 @@ section {
 
 /* First-use journey and compact iOS canvas */
 body {
-  background: #f0f1f2;
+  background: #e9efec;
 }
 .app {
-  box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.04);
+  box-shadow: 0 0 0 1px rgb(44 110 80 / 7%);
 }
 .first-action {
   width: 100%;
@@ -2120,15 +2132,16 @@ body {
   align-items: center;
   gap: 14px;
   padding: 20px !important;
-  background: #111 !important;
-  color: white !important;
+  background: var(--accent) !important;
+  color: var(--foreground) !important;
+  border: 1px solid #cfe0d6 !important;
   border-radius: 12px;
   text-align: left;
 }
 .first-action-number {
   align-self: start;
   font-size: 12px;
-  color: #a8aaad;
+  color: var(--primary);
   padding-top: 3px;
 }
 .first-action > span:nth-child(2) {
@@ -2137,7 +2150,7 @@ body {
   gap: 7px;
 }
 .first-action small {
-  color: #bfc1c4;
+  color: var(--muted-foreground);
   font-size: 12px;
 }
 .first-action strong {
@@ -2145,7 +2158,7 @@ body {
   font-weight: 600;
 }
 .first-action p {
-  color: #c8c9cb;
+  color: var(--muted-foreground);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -2183,7 +2196,7 @@ body {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #111;
+  background: var(--primary);
   color: white;
   display: inline-flex;
   align-items: center;
@@ -2196,7 +2209,7 @@ body {
   max-width: 500px;
   min-height: 100dvh;
   margin: auto;
-  background: #fff;
+  background: var(--background);
   padding: env(safe-area-inset-top) 28px
     calc(110px + env(safe-area-inset-bottom));
   position: relative;
@@ -2229,15 +2242,15 @@ body {
 }
 .onboarding-progress i {
   height: 3px;
-  background: #e8e9eb;
+  background: var(--border);
   border-radius: 4px;
 }
 .onboarding-progress i.active {
-  background: #111;
+  background: var(--primary);
 }
 .onboarding-error {
-  background: #fff1ee;
-  color: #a13c31;
+  background: var(--destructive-soft);
+  color: var(--destructive);
   padding: 12px;
   border-radius: 9px;
   font-size: 13px;
@@ -2252,7 +2265,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #111;
+  background: var(--primary);
   color: #fff;
   border-radius: 16px;
   margin-bottom: 32px;
@@ -2354,14 +2367,14 @@ body {
 .onboarding-toggle input {
   width: 22px;
   height: 22px;
-  accent-color: #111;
+  accent-color: var(--primary);
 }
 .injury-setup {
   display: flex;
   flex-direction: column;
   gap: 22px;
   padding-left: 16px;
-  border-left: 2px solid #111;
+  border-left: 2px solid var(--primary);
 }
 .onboarding-footer {
   position: fixed;
@@ -2371,7 +2384,7 @@ body {
   width: 100%;
   max-width: 500px;
   padding: 14px 28px calc(14px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.96);
+  background: rgb(251 253 252 / 96%);
   border-top: 1px solid var(--border);
   backdrop-filter: blur(14px);
   z-index: 5;

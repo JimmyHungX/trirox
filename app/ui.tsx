@@ -102,7 +102,7 @@ export function Ring({
             cy="80"
             r="70"
             fill="none"
-            stroke="#e8e9eb"
+            stroke="var(--border)"
             strokeWidth="8"
           />
           <circle
@@ -110,7 +110,7 @@ export function Ring({
             cy="80"
             r="70"
             fill="none"
-            stroke="#111"
+            stroke="var(--primary)"
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={440}
