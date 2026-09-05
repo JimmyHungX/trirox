@@ -29,6 +29,7 @@ flowchart LR
     U[使用者 / iPhone 瀏覽器] --> P[React 19 PWA 介面]
     P --> O[首次設定與四個主要頁面]
     P --> A[Vinext API /api/state]
+    P --> L[瀏覽器 localStorage]
     P -. 支援時啟用 .-> W[Browser WebMCP]
     A --> V[輸入驗證與版本衝突檢查]
     V --> D[(Cloudflare D1)]
@@ -37,9 +38,11 @@ flowchart LR
     R --> P
     S[OpenAI Sites] --> P
     S --> A
+    E[Vercel] --> P
+    E --> L
 ```
 
-前端以 React 和 Vinext 建立行動優先介面。瀏覽器透過 `/api/state` 讀寫單一運動者狀態；API 會驗證完整資料結構，並以 revision 執行樂觀鎖定，避免不同分頁互相覆蓋。課表產生、恢復分數、ACWR 與干擾判斷目前在應用程式內以可測試的規則式函式完成，資料則儲存在 Cloudflare D1。
+前端以 React 和 Vinext 建立行動優先介面。OpenAI Sites 版本透過 `/api/state` 讀寫單一運動者狀態，資料儲存在 Cloudflare D1；Vercel 版本則使用目前瀏覽器的 `localStorage`，不會跨瀏覽器或跨裝置同步。課表產生、恢復分數、ACWR 與干擾判斷目前在應用程式內以可測試的規則式函式完成。
 
 ## 使用技術
 
@@ -47,9 +50,9 @@ flowchart LR
 | ------------ | ---------------------------------------------- | ---------------------------------------------------------------------- |
 | AI 模型      | 規則式訓練推薦引擎                             | 計算恢復狀態、標準化 ACWR、訓練干擾與保守調整；目前未呼叫外部生成式 AI |
 | 前端         | React 19、TypeScript、Vinext、Base UI、Lucide  | PWA 介面、表單、圖示與互動流程                                         |
-| 後端         | Vinext Server Functions、Cloudflare Workers    | 提供 `/api/state`、資料驗證與儲存流程                                  |
-| 資料庫       | Cloudflare D1、Drizzle ORM                     | 儲存個人資料、課表、身體紀錄、訓練回報、賽事與設定                     |
-| Sponsor 技術 | OpenAI Sites                                   | 私人網站託管、版本保存與正式部署                                       |
+| 後端         | Vinext Server Functions、Cloudflare Workers    | Sites 版本提供 `/api/state`、資料驗證與儲存流程                        |
+| 資料儲存     | Cloudflare D1、Drizzle ORM、localStorage       | Sites 使用 D1；Vercel 使用瀏覽器本機資料                               |
+| 部署         | OpenAI Sites、Vercel                           | 提供私人展示版與公開 Web App 部署                                      |
 | 品質工具     | Node.js Test Runner、TypeScript、Oxlint、Oxfmt | 單元測試、型別檢查、程式檢查與格式化                                   |
 
 ## 安裝與執行
@@ -81,9 +84,14 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
+npm run build:vercel
 ```
 
 若修改 `db/schema.ts`，再執行 `npm run db:generate` 產生新的 migration；不要在沒有 schema 變更時覆寫既有 migration。
+
+## Vercel 部署
+
+把 GitHub 儲存庫匯入 Vercel 後可直接部署；根目錄的 `vercel.json` 會執行 `npm run build:vercel`，並輸出 Vercel Build Output API 格式。Vercel 版本會把使用者紀錄保存在目前瀏覽器，清除網站資料前應先從 App 設定匯出備份。
 
 ## 作品展示
 
@@ -95,6 +103,7 @@ npm run build
 
 - 目前是行動優先 Web MVP，不是原生 iOS 或 App Store 應用程式。
 - 第一版只儲存一位運動者的彙總狀態；公開分享前必須完成帳號系統與逐使用者資料隔離。
+- Vercel 版本使用瀏覽器本機資料，不支援登入、跨裝置同步或伺服器備份。
 - HealthKit、Garmin、COROS、背景推播與穿戴裝置 OAuth 尚未整合。
 - HRV、ACWR、恢復分數和肌群負荷係數為暫定模型，需要運動科學校準與真實資料驗證。
 - 能力自動校正、因果歸因與比賽成績預測尚未完成；資料不足時介面會保留未知值，不產生假預測。
@@ -113,6 +122,7 @@ npm run build
 | Lucide Icons            | [lucide.dev](https://lucide.dev/)                               | ISC License                              |
 | Cloudflare Workers / D1 | [developers.cloudflare.com](https://developers.cloudflare.com/) | 依 Cloudflare 服務條款使用               |
 | OpenAI Sites            | OpenAI Sites 專案服務                                           | 依 OpenAI 服務條款使用；部署維持私人存取 |
+| Vercel                  | [vercel.com](https://vercel.com/)                               | 依 Vercel 服務條款使用；公開部署        |
 | 工程規格與 UI 參考圖    | `docs/`                                                         | 專案擁有者提供，僅供本專案實作使用       |
 
 儲存庫不應提交 API 金鑰、Token、OAuth 憑證或真實個人健康資料；本機環境變數、Wrangler 狀態與建置輸出均已排除於版本控制之外。

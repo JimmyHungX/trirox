@@ -23,6 +23,9 @@ import {
 } from '@/lib/training';
 import { Choice, Field, Range, Checks, IconButton, Empty } from './ui';
 import { Confirm, type PanelProps } from './panels';
+
+declare const __TRIROX_STORAGE_MODE__: 'api' | 'local';
+
 export function TrainingSettings({ state, save, busy, close }: PanelProps) {
   const [s, setS] = useState<Settings>(state.settings);
   const update = (v: Partial<Settings>) => setS({ ...s, ...v });
@@ -410,8 +413,10 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
       <hr />
       <h3>隱私與資料</h3>
       <p className="caption">
-        此網站僅供擁有者存取，紀錄儲存在此網站的雲端資料庫。目前不會同步 Apple
-        Health、Garmin 或 COROS。
+        {__TRIROX_STORAGE_MODE__ === 'local'
+          ? '紀錄只保存在目前瀏覽器，不會跨裝置同步。清除瀏覽器資料前請先匯出備份。'
+          : '此網站僅供擁有者存取，紀錄儲存在此網站的雲端資料庫。'}
+        目前不會同步 Apple Health、Garmin 或 COROS。
       </p>
       <button
         className="secondary full"
@@ -456,10 +461,14 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
       </p>
       <div className="setting-static">
         <span>登入狀態</span>
-        <strong>網站擁有者</strong>
+        <strong>
+          {__TRIROX_STORAGE_MODE__ === 'local' ? '本機資料模式' : '網站擁有者'}
+        </strong>
       </div>
       <p className="caption">
-        存取由網站平台管理，帳號切換與登出請至 ChatGPT 帳號設定。
+        {__TRIROX_STORAGE_MODE__ === 'local'
+          ? '此版本不需登入，資料由目前瀏覽器獨立保存。'
+          : '存取由網站平台管理，帳號切換與登出請至 ChatGPT 帳號設定。'}
       </p>
       <Confirm
         open={confirm}

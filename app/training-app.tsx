@@ -50,13 +50,19 @@ import {
   metrics,
   conflict,
   load,
+  seed,
   sportNames,
   type AppState,
   type Workout,
 } from '@/lib/training';
 import { Panel } from './panels';
 import { registerTrainingTools } from '@/lib/webmcp';
+import { validState } from '@/lib/validation';
 import { Onboarding } from './onboarding';
+
+declare const __TRIROX_STORAGE_MODE__: 'api' | 'local';
+
+const localStateKey = 'trirox-state-v1';
 export type PanelState = { type: string; id?: string };
 const navs = [
   { id: 'today', label: '今日', icon: Home },
@@ -123,6 +129,14 @@ export default function TrainingApp() {
   async function reload() {
     setError('');
     try {
+      if (__TRIROX_STORAGE_MODE__ === 'local') {
+        const stored = localStorage.getItem(localStateKey);
+        const parsed = stored ? (JSON.parse(stored) as unknown) : null;
+        const next = validState(parsed) ? parsed : seed();
+        setState(next);
+        setRevision(-1);
+        return;
+      }
       const r = await fetch('/api/state?date=' + dayKey());
       const data = (await r.json()) as {
         state: AppState;
@@ -157,6 +171,12 @@ export default function TrainingApp() {
     setBusy(true);
     setError('');
     try {
+      if (__TRIROX_STORAGE_MODE__ === 'local') {
+        localStorage.setItem(localStateKey, JSON.stringify(next));
+        setState(next);
+        setToast(message);
+        return true;
+      }
       const r = await fetch('/api/state', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
