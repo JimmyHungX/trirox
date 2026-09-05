@@ -12,6 +12,7 @@
 - Training preflight, running HUD, pause/resume, HYROX segment advance and report handoff: browser-verified at 390 px.
 - Training preflight and running HUD horizontal fit: browser-verified at 375 px.
 - Unified light palette across navigation, workout preflight and running HUD: browser-verified at 375-390 px.
+- Compact bottom navigation remains flush with the viewport across all four tabs and page scroll positions: browser-verified with iPhone 13 emulation.
 - iPhone real-device interaction and WebMCP runtime contracts: not verified.
 - Haptic vibration remains browser-dependent and is not verified on iPhone hardware.
 - Native wearable synchronization, push notifications, calibrated predictions and durable background timing remain outside this web MVP. See README for details.

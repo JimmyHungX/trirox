@@ -739,7 +739,7 @@ textarea {
   background: var(--background);
   margin: auto;
   padding: env(safe-area-inset-top) 32px
-    calc(100px + env(safe-area-inset-bottom));
+    calc(82px + env(safe-area-inset-bottom));
 }
 .app-header {
   height: 94px;
@@ -1129,25 +1129,27 @@ section {
   border-top: 1px solid var(--border);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  min-height: calc(62px + env(safe-area-inset-bottom));
+  padding: 7px 8px max(7px, env(safe-area-inset-bottom));
   z-index: 30;
   backdrop-filter: blur(14px);
 }
 .bottom-nav a {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   align-items: center;
   color: #7b7c80;
-  font-size: 12px;
-  min-height: 56px;
+  font-size: 11px;
+  line-height: 1.2;
+  min-height: 48px;
 }
 .bottom-nav a.active {
   color: var(--primary);
 }
 .bottom-nav i {
-  height: 4px;
-  width: 4px;
+  height: 3px;
+  width: 3px;
   border-radius: 50%;
   background: transparent;
 }
