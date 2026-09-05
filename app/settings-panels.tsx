@@ -1,6 +1,14 @@
 'use client';
 import { useState } from 'react';
-import { Download, Watch, Heart, Plus, Trash2, Smartphone } from 'lucide-react';
+import {
+  Download,
+  Watch,
+  Heart,
+  Plus,
+  Trash2,
+  Smartphone,
+  Database,
+} from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import {
   type Settings,
@@ -372,7 +380,8 @@ export function NotificationsPanel({ state, save, busy, close }: PanelProps) {
 }
 export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
   const [units, setUnits] = useState(state.settings.units),
-    [confirm, setConfirm] = useState(false);
+    [confirm, setConfirm] = useState(false),
+    [demoConfirm, setDemoConfirm] = useState(false);
   return (
     <div className="panel-body form">
       <Choice
@@ -425,6 +434,21 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
           </button>
         </>
       )}
+      {!state.demo && (
+        <>
+          <p className="caption">
+            示範資料包含 31
+            天身體紀錄、歷史訓練、本週課表與賽事，可用來檢查完整介面。
+          </p>
+          <button
+            className="secondary full"
+            onClick={() => setDemoConfirm(true)}
+          >
+            <Database size={18} />
+            載入完整示範資料
+          </button>
+        </>
+      )}
       <hr />
       <h3>加入 iPhone 主畫面</h3>
       <p className="caption">
@@ -456,6 +480,17 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
             )
           )
             close();
+        }}
+      />
+      <Confirm
+        open={demoConfirm}
+        setOpen={setDemoConfirm}
+        title="載入示範資料？"
+        description="目前的個人資料、課表與紀錄將由完整示範資料取代。需要保留時請先匯出備份。"
+        action="載入示範資料"
+        busy={busy}
+        onConfirm={async () => {
+          if (await save(seed(), '已載入完整示範資料')) close();
         }}
       />
     </div>
