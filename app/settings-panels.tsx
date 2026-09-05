@@ -155,11 +155,13 @@ export function TrainingSettings({ state, save, busy, close }: PanelProps) {
     </form>
   );
 }
-export function DevicesPanel({ state, notify }: PanelProps) {
+export function DevicesPanel(_props: PanelProps) {
   const [info, setInfo] = useState('');
   return (
     <div className="panel-body form">
-      <p className="muted">目前使用手動紀錄，尚未連接穿戴裝置。</p>
+      <p className="muted">
+        在這裡管理訓練資料來源。目前使用手動紀錄，尚未連接穿戴裝置。
+      </p>
       {[
         {
           name: 'Apple Health',
@@ -193,21 +195,10 @@ export function DevicesPanel({ state, notify }: PanelProps) {
       ))}
       {info && <p className="info-note">{info}</p>}
       <hr />
-      <h3>資料匯出</h3>
+      <h3>資料權限</h3>
       <p className="caption">
-        包含課表、訓練回報、每日紀錄與設定。匯出檔可能包含身體狀況資料。
+        目前未授予任何外部裝置存取權。裝置連線啟用後，可在這裡查看授權範圍、最後同步時間與中止連線。
       </p>
-      <button
-        className="secondary full"
-        onClick={() => {
-          download(state);
-          notify('資料已匯出');
-        }}
-      >
-        <Download size={18} />
-        匯出我的資料
-      </button>
-      <p className="caption">裝置資料權限：目前未授予任何外部裝置存取權。</p>
     </div>
   );
 }
@@ -366,7 +357,7 @@ export function NotificationsPanel({ state, save, busy, close }: PanelProps) {
       <p className="info-note">此版本可儲存提醒偏好；背景推播服務尚未啟用。</p>
       <div>
         {Object.entries(n).map(([k, v]) => (
-          <label className="toggle-row" key={k}>
+          <label className="toggle-row pressable" key={k}>
             <span>{k}</span>
             <Switch
               aria-label={k}
@@ -418,10 +409,11 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
         {__TRIROX_STORAGE_MODE__ === 'local'
           ? '紀錄只保存在目前瀏覽器，不會跨裝置同步。清除瀏覽器資料前請先匯出備份。'
           : '此網站僅供擁有者存取，紀錄儲存在此網站的雲端資料庫。'}
-        目前不會同步 Apple Health、Garmin 或 COROS。
+        匯出檔包含課表、訓練回報、每日紀錄與設定，也可能包含身體狀況資料。
       </p>
       <button
         className="secondary full"
+        data-haptic="light"
         onClick={() => {
           download(state);
           notify('資料已匯出');

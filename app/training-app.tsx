@@ -59,15 +59,12 @@ import {
 import { Panel } from './panels';
 import { registerTrainingTools } from '@/lib/webmcp';
 import { validState } from '@/lib/validation';
+import { haptic } from '@/lib/haptics';
 import { Onboarding } from './onboarding';
 
 declare const __TRIROX_STORAGE_MODE__: 'api' | 'local';
 
 const localStateKey = 'trirox-state-v1';
-const hapticPatterns: Record<'light' | 'medium', number | number[]> = {
-  light: 10,
-  medium: [18, 24, 18],
-};
 export type PanelState = { type: string; id?: string };
 const navs = [
   { id: 'today', label: '今日', icon: Home },
@@ -86,7 +83,7 @@ const labels: Record<string, string> = {
   newRace: '新增賽事',
   editRace: '編輯賽事',
   training: '訓練設定',
-  devices: '裝置與資料',
+  devices: '裝置連線',
   injuries: '傷病與限制',
   notifications: '通知',
   settings: 'App 設定',
@@ -111,12 +108,6 @@ export default function TrainingApp() {
     latest.current = state;
   }, [state]);
   useEffect(() => {
-    const vibrate = (strength: string) => {
-      if (!(strength in hapticPatterns) || !('vibrate' in navigator)) return;
-      navigator.vibrate(
-        hapticPatterns[strength as keyof typeof hapticPatterns],
-      );
-    };
     const onConfirmedAction = (event: MouseEvent) => {
       const target =
         event.target instanceof Element
@@ -129,9 +120,14 @@ export default function TrainingApp() {
       const strength =
         target.dataset.haptic ??
         (target.matches('[data-slot="switch"]') ? 'light' : '');
-      vibrate(strength);
+      if (strength === 'light' || strength === 'medium') haptic(strength);
     };
-    const onFormSubmit = () => vibrate('light');
+    const onFormSubmit = (event: SubmitEvent) => {
+      const submitter = event.submitter;
+      if (submitter instanceof Element && submitter.closest('[data-haptic]'))
+        return;
+      haptic('light');
+    };
     document.addEventListener('click', onConfirmedAction);
     document.addEventListener('submit', onFormSubmit);
     return () => {
@@ -167,6 +163,7 @@ export default function TrainingApp() {
         const stored = localStorage.getItem(localStateKey);
         const parsed = stored ? (JSON.parse(stored) as unknown) : null;
         const next = validState(parsed) ? parsed : firstUseState();
+        latest.current = next;
         setState(next);
         setRevision(-1);
         return;
@@ -178,6 +175,7 @@ export default function TrainingApp() {
         error?: string;
       };
       if (!r.ok) throw new Error(data.error);
+      latest.current = data.state;
       setState(data.state);
       setRevision(data.revision);
     } catch (e) {
@@ -201,29 +199,41 @@ export default function TrainingApp() {
   }, [toast]);
   async function save(next: AppState, message = '已儲存') {
     if (gate.current) return false;
+    const previous = latest.current;
+    const previousRevision = revision;
+    let revisionConflict = false;
     gate.current = true;
     setBusy(true);
     setError('');
+    latest.current = next;
+    setState(next);
     try {
       if (__TRIROX_STORAGE_MODE__ === 'local') {
         localStorage.setItem(localStateKey, JSON.stringify(next));
-        setState(next);
         setToast(message);
         return true;
       }
       const r = await fetch('/api/state', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ state: next, revision }),
+        body: JSON.stringify({ state: next, revision: previousRevision }),
       });
       const data = (await r.json()) as { revision: number; error?: string };
+      revisionConflict = r.status === 409;
       if (!r.ok) throw new Error(data.error);
-      setState(next);
       setRevision(data.revision);
       setToast(message);
       return true;
     } catch (e) {
-      setError(e instanceof Error ? e.message : '儲存失敗');
+      if (previous) {
+        latest.current = previous;
+        setState(previous);
+      }
+      const message = e instanceof Error ? e.message : '儲存失敗';
+      if (revisionConflict) {
+        await reload();
+        setError(message + ' 已重新載入最新資料。');
+      } else setError(message);
       return false;
     } finally {
       gate.current = false;
@@ -1051,8 +1061,8 @@ export default function TrainingApp() {
               />
               <Row
                 icon={Watch}
-                title="裝置與資料"
-                sub="Apple Health、Garmin、COROS"
+                title="裝置連線"
+                sub="Apple Health、Garmin、COROS 連線"
                 onClick={() => open('devices')}
               />
               <Row
@@ -1110,6 +1120,8 @@ export default function TrainingApp() {
       >
         <SheetContent
           side="bottom"
+          spring
+          motionOpen={!!panel}
           className={`app-sheet ${panel?.type === 'timer' ? 'timer-sheet' : ''}`}
           showCloseButton={false}
         >

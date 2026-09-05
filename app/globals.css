@@ -642,14 +642,17 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 button,
-a {
+a,
+[role='button'],
+.pressable {
   touch-action: manipulation;
   transition:
-    scale 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    filter 120ms ease,
-    box-shadow 120ms ease,
-    background-color 120ms ease,
-    color 120ms ease;
+    scale 110ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 100ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 100ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 120ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 120ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 120ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 button {
   cursor: pointer;
@@ -662,9 +665,12 @@ button:disabled {
 }
 button:not(:disabled):active,
 a:active,
+[role='button']:not([aria-disabled='true']):active,
+.pressable:not([aria-disabled='true']):active,
 [data-slot='switch']:not([data-disabled]):active {
   scale: 0.96;
-  filter: brightness(0.92);
+  opacity: 0.85;
+  filter: brightness(0.94);
 }
 button:focus-visible,
 a:focus-visible {
@@ -803,7 +809,7 @@ textarea {
   vertical-align: middle;
 }
 .main-content {
-  animation: enter 0.2s ease;
+  animation: enter 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .main-content > section + section {
   border-top: 1px solid var(--border);
@@ -861,7 +867,7 @@ section {
   font-variant-numeric: tabular-nums;
 }
 .number-transition {
-  animation: number-in 260ms ease-out;
+  display: inline-block;
 }
 .ring span {
   font-size: 15px;
@@ -1833,11 +1839,11 @@ section {
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 20px #0002;
-  animation: toast-in 180ms ease-out;
+  animation: toast-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .toast svg > * {
   stroke-dasharray: 32;
-  animation: check-draw 420ms ease-out;
+  animation: check-draw 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .startup {
   padding-top: 50px;
@@ -2336,7 +2342,7 @@ body {
 }
 .onboarding-step {
   padding: 4px 0 24px;
-  animation: enter 0.22s ease;
+  animation: enter 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .onboarding-step .step-label {
   color: #77797d;
@@ -2439,13 +2445,15 @@ body {
   background: var(--background);
   box-shadow: 0 3px 0 var(--border);
   transition:
-    scale 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    background-color 120ms ease,
-    border-color 120ms ease,
-    box-shadow 120ms ease;
+    scale 110ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 100ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 120ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 120ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 120ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .onboarding-form .checks label:active {
-  scale: 0.97;
+  scale: 0.96;
+  opacity: 0.85;
   box-shadow: 0 1px 0 var(--border);
 }
 .onboarding-form .checks label:has([data-checked]) {

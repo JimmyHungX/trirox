@@ -17,8 +17,39 @@ import {
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { ReactNode } from 'react';
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useSpring,
+} from 'framer-motion';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { Sport } from '@/lib/training';
+
+function AnimatedScore({ score }: { score: number | null }) {
+  const value = useMotionValue(score ?? 0);
+  const spring = useSpring(value, { damping: 20, stiffness: 100, mass: 0.6 });
+  const reduceMotion = useReducedMotion();
+  const [display, setDisplay] = useState(score ?? 0);
+
+  useEffect(() => {
+    if (score === null) return;
+    if (reduceMotion) {
+      spring.jump(score);
+    } else value.set(score);
+  }, [reduceMotion, score, spring, value]);
+
+  useMotionValueEvent(spring, 'change', (current) => {
+    setDisplay(Math.round(current));
+  });
+
+  return (
+    <strong className="number-transition">
+      {score === null ? '—' : reduceMotion ? score : display}
+    </strong>
+  );
+}
 export function SportIcon({
   sport,
   size = 26,
@@ -85,6 +116,8 @@ export function Ring({
   small?: boolean;
   frameless?: boolean;
 }) {
+  const reduceMotion = useReducedMotion();
+  const strokeDashoffset = 440 * (1 - (score ?? 0) / 100);
   return (
     <div
       className={
@@ -105,7 +138,7 @@ export function Ring({
             stroke="var(--border)"
             strokeWidth="8"
           />
-          <circle
+          <motion.circle
             cx="80"
             cy="80"
             r="70"
@@ -114,7 +147,13 @@ export function Ring({
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={440}
-            strokeDashoffset={440 * (1 - (score ?? 0) / 100)}
+            initial={false}
+            animate={{ strokeDashoffset }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { type: 'spring', damping: 20, stiffness: 100, mass: 0.6 }
+            }
             transform="rotate(-90 80 80)"
           />
         </svg>
@@ -122,9 +161,7 @@ export function Ring({
       <div
         aria-label={frameless ? label + ' ' + (score ?? '尚無數據') : undefined}
       >
-        <strong key={score ?? 'empty'} className="number-transition">
-          {score ?? '—'}
-        </strong>
+        <AnimatedScore score={score} />
         <span>{label === '恢復分數' ? '/100' : label}</span>
       </div>
     </div>
@@ -283,7 +320,7 @@ export function Checks({
       <legend>{label}</legend>
       <div>
         {options.map((o) => (
-          <label key={o}>
+          <label className="pressable" key={o}>
             <Checkbox
               checked={values.includes(o)}
               onCheckedChange={(v) =>

@@ -49,7 +49,7 @@ flowchart LR
 | 類型         | 技術／服務                                     | 用途                                                                   |
 | ------------ | ---------------------------------------------- | ---------------------------------------------------------------------- |
 | AI 模型      | 規則式訓練推薦引擎                             | 計算恢復狀態、標準化 ACWR、訓練干擾與保守調整；目前未呼叫外部生成式 AI |
-| 前端         | React 19、TypeScript、Vinext、Base UI、Lucide  | PWA 介面、表單、圖示與互動流程                                         |
+| 前端         | React 19、TypeScript、Vinext、Base UI、Framer Motion、Lucide | PWA 介面、表單、圖示、彈簧動畫與互動流程                      |
 | 後端         | Vinext Server Functions、Cloudflare Workers    | Sites 版本提供 `/api/state`、資料驗證與儲存流程                        |
 | 資料儲存     | Cloudflare D1、Drizzle ORM、localStorage       | Sites 使用 D1；Vercel 使用瀏覽器本機資料                               |
 | 部署         | OpenAI Sites、Vercel                           | 提供開發預覽與公開 Web App 部署                                        |
@@ -131,6 +131,7 @@ npm run build:vercel
 | Vinext | [cloudflare/vinext](https://github.com/cloudflare/vinext) | MIT License |
 | Drizzle ORM | [orm.drizzle.team](https://orm.drizzle.team/) | Apache License 2.0 |
 | Base UI、shadcn/ui 與相關 UI 元件 | [base-ui.com](https://base-ui.com/)、[ui.shadcn.com](https://ui.shadcn.com/) | MIT License；CVA 為 Apache License 2.0 |
+| Framer Motion | [motion.dev](https://motion.dev/) | MIT License |
 | Tailwind CSS、tailwind-merge、tw-animate-css | [tailwindcss.com](https://tailwindcss.com/)、各套件 npm metadata | MIT License |
 | Lucide Icons | [lucide.dev](https://lucide.dev/) | ISC License |
 | date-fns、Embla Carousel、Recharts | [date-fns.org](https://date-fns.org/)、[embla-carousel.com](https://www.embla-carousel.com/)、[recharts.org](https://recharts.org/) | MIT License |

@@ -351,7 +351,7 @@ Sparkline 高度：
 首頁只保留 6 個入口：
 1. 我的賽事
 2. 訓練設定
-3. 裝置與資料
+3. 裝置連線
 4. 傷病與限制
 5. 通知
 6. App 設定
@@ -364,12 +364,12 @@ Sparkline 高度：
 ## 16. Motion
 
 Duration:
-- micro interaction: 120–180ms
-- page transition: 180–260ms
-- modal/sheet: 220–300ms
+- micro interaction: 100–120ms
+- page transition: 260ms
+- modal/sheet: physical spring, damping 30 / stiffness 300
 
 Easing:
-`cubic-bezier(0.2, 0.8, 0.2, 1)`
+`cubic-bezier(0.34, 1.56, 0.64, 1)`；bottom sheet 與數字動畫使用 Framer Motion spring。
 
 不要過度彈跳。
 不要遊戲化動畫。

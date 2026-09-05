@@ -618,7 +618,7 @@ export function SuggestionPanel({
           <p className="info-note">AI 只提出建議，確認後才會修改課表。</p>
           <button
             className="primary full"
-            data-haptic="light"
+            data-haptic="medium"
             disabled={busy}
             onClick={() => decide(true)}
           >
