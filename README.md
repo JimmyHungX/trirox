@@ -52,7 +52,7 @@ flowchart LR
 | 前端         | React 19、TypeScript、Vinext、Base UI、Lucide  | PWA 介面、表單、圖示與互動流程                                         |
 | 後端         | Vinext Server Functions、Cloudflare Workers    | Sites 版本提供 `/api/state`、資料驗證與儲存流程                        |
 | 資料儲存     | Cloudflare D1、Drizzle ORM、localStorage       | Sites 使用 D1；Vercel 使用瀏覽器本機資料                               |
-| 部署         | OpenAI Sites、Vercel                           | 提供私人展示版與公開 Web App 部署                                      |
+| 部署         | OpenAI Sites、Vercel                           | 提供開發預覽與公開 Web App 部署                                        |
 | 品質工具     | Node.js Test Runner、TypeScript、Oxlint、Oxfmt | 單元測試、型別檢查、程式檢查與格式化                                   |
 
 ## 安裝與執行
@@ -95,9 +95,20 @@ npm run build:vercel
 
 ## 作品展示
 
-- 作品展示網址：[TRIROX 線上版]([https://trirox.vercel.app/])
+- 作品展示網址：[TRIROX 公開線上版](https://trirox.vercel.app/)
 - 原始碼：[github.com/JimmyHungX/trirox](https://github.com/JimmyHungX/trirox)
 - 評選影片：尚未提供
+
+## 公開提交檢查
+
+- [x] GitHub 儲存庫可由無痕視窗直接開啟。
+- [x] 儲存庫包含可辨識的前端、API、資料模型、演算法、測試與部署實作。
+- [x] README 包含問題、功能、架構、技術、執行方式與限制。
+- [x] 已加入明確的 [`LICENSE`](LICENSE) 檔案。
+- [x] 第三方套件、模型、資料與素材的來源及授權已於下方揭露。
+- [x] 已檢查版本控制中的檔案，未發現 API Key、Token、密碼或真實使用者個人資料。
+
+以上連結與內容於 2026-09-06 以未登入請求及版本控制檔案掃描確認；部署狀態後續仍可能受平台設定影響。
 
 ## 限制與未來工作
 
@@ -113,17 +124,23 @@ npm run build:vercel
 
 ## 第三方服務、資料與素材
 
-| 項目                    | 來源                                                            | 授權／使用方式                           |
-| ----------------------- | --------------------------------------------------------------- | ---------------------------------------- |
-| React / React DOM       | [react.dev](https://react.dev/)                                 | MIT License                              |
-| Vinext                  | [cloudflare/vinext](https://github.com/cloudflare/vinext)       | MIT License                              |
-| Drizzle ORM             | [orm.drizzle.team](https://orm.drizzle.team/)                   | Apache License 2.0                       |
-| Base UI                 | [base-ui.com](https://base-ui.com/)                             | MIT License                              |
-| Lucide Icons            | [lucide.dev](https://lucide.dev/)                               | ISC License                              |
-| Cloudflare Workers / D1 | [developers.cloudflare.com](https://developers.cloudflare.com/) | 依 Cloudflare 服務條款使用               |
-| OpenAI Sites            | OpenAI Sites 專案服務                                           | 依 OpenAI 服務條款使用；部署維持私人存取 |
-| Vercel                  | [vercel.com](https://vercel.com/)                               | 依 Vercel 服務條款使用；公開部署        |
-| 工程規格與 UI 參考圖    | `docs/`                                                         | 專案擁有者提供，僅供本專案實作使用       |
+| 項目 | 來源 | 授權／使用方式 |
+| --- | --- | --- |
+| React / React DOM / React Server DOM | [react.dev](https://react.dev/) | MIT License |
+| Vinext | [cloudflare/vinext](https://github.com/cloudflare/vinext) | MIT License |
+| Drizzle ORM | [orm.drizzle.team](https://orm.drizzle.team/) | Apache License 2.0 |
+| Base UI、shadcn/ui 與相關 UI 元件 | [base-ui.com](https://base-ui.com/)、[ui.shadcn.com](https://ui.shadcn.com/) | MIT License；CVA 為 Apache License 2.0 |
+| Tailwind CSS、tailwind-merge、tw-animate-css | [tailwindcss.com](https://tailwindcss.com/)、各套件 npm metadata | MIT License |
+| Lucide Icons | [lucide.dev](https://lucide.dev/) | ISC License |
+| date-fns、Embla Carousel、Recharts | [date-fns.org](https://date-fns.org/)、[embla-carousel.com](https://www.embla-carousel.com/)、[recharts.org](https://recharts.org/) | MIT License |
+| Cloudflare Workers / D1 | [developers.cloudflare.com](https://developers.cloudflare.com/) | 依 Cloudflare 服務條款使用 |
+| OpenAI Sites | OpenAI Sites 專案服務 | 依 OpenAI 服務條款使用；僅作開發預覽 |
+| Vercel | [vercel.com](https://vercel.com/) | 依 Vercel 服務條款使用；公開部署 |
+| 訓練推薦模型 | 專案內 `lib/training.ts` 規則式實作 | 專案自有程式碼，未使用外部生成式 AI 模型或模型權重 |
+| 示範訓練資料 | 專案內建立的合成資料 | 專案擁有者建立，不含真實個人健康資料 |
+| 工程規格與 UI 參考圖 | `docs/` | 專案擁有者提供，僅供本專案實作使用 |
+
+完整的直接與間接套件版本記錄於 `package.json` 及 `package-lock.json`，各套件仍適用其發布者附帶的授權條款。
 
 儲存庫不應提交 API 金鑰、Token、OAuth 憑證或真實個人健康資料；本機環境變數、Wrangler 狀態與建置輸出均已排除於版本控制之外。
 
@@ -136,4 +153,4 @@ npm run build:vercel
 
 ## License
 
-目前未指定開源授權。除上述第三方套件及素材各自適用的授權外，本專案內容保留所有權利。
+本專案採用 [`LICENSE`](LICENSE) 所列的保留所有權利授權，不是開源授權。第三方套件、產生的元件與素材仍依各自授權條款使用。
