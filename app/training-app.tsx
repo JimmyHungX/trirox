@@ -63,6 +63,10 @@ import { Onboarding } from './onboarding';
 declare const __TRIROX_STORAGE_MODE__: 'api' | 'local';
 
 const localStateKey = 'trirox-state-v1';
+const hapticPatterns: Record<'light' | 'medium', number | number[]> = {
+  light: 10,
+  medium: [18, 24, 18],
+};
 export type PanelState = { type: string; id?: string };
 const navs = [
   { id: 'today', label: '今日', icon: Home },
@@ -105,6 +109,35 @@ export default function TrainingApp() {
   useEffect(() => {
     latest.current = state;
   }, [state]);
+  useEffect(() => {
+    const vibrate = (strength: string) => {
+      if (!(strength in hapticPatterns) || !('vibrate' in navigator)) return;
+      navigator.vibrate(
+        hapticPatterns[strength as keyof typeof hapticPatterns],
+      );
+    };
+    const onConfirmedAction = (event: MouseEvent) => {
+      const target =
+        event.target instanceof Element
+          ? (event.target.closest(
+              '[data-haptic], [data-slot="switch"]',
+            ) as HTMLElement | null)
+          : null;
+      if (!target || target.matches(':disabled, [aria-disabled="true"]'))
+        return;
+      const strength =
+        target.dataset.haptic ??
+        (target.matches('[data-slot="switch"]') ? 'light' : '');
+      vibrate(strength);
+    };
+    const onFormSubmit = () => vibrate('light');
+    document.addEventListener('click', onConfirmedAction);
+    document.addEventListener('submit', onFormSubmit);
+    return () => {
+      document.removeEventListener('click', onConfirmedAction);
+      document.removeEventListener('submit', onFormSubmit);
+    };
+  }, []);
   useEffect(
     () =>
       registerTrainingTools(
@@ -1071,7 +1104,7 @@ export default function TrainingApp() {
       >
         <SheetContent
           side="bottom"
-          className="app-sheet"
+          className={`app-sheet ${panel?.type === 'timer' ? 'timer-sheet' : ''}`}
           showCloseButton={false}
         >
           <SheetHeader className="panel-header">

@@ -329,6 +329,7 @@ export function InjuriesPanel({ state, save, busy }: PanelProps) {
         title="刪除這項限制？"
         description="後續課表將不再排除此限制的項目。"
         action="確認刪除"
+        haptic="medium"
         busy={busy}
         onConfirm={async () => {
           if (
@@ -402,6 +403,7 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
       </div>
       <button
         className="primary full"
+        data-haptic="light"
         disabled={busy}
         onClick={async () => {
           if (await save({ ...state, settings: { ...state.settings, units } }))

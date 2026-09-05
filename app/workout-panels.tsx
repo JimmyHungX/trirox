@@ -9,6 +9,9 @@ import {
   Sparkles,
   ArrowRight,
   ChevronRight,
+  Navigation,
+  Watch,
+  Square,
 } from 'lucide-react';
 import {
   type Workout,
@@ -143,21 +146,21 @@ export function WorkoutPanel(p: PanelProps) {
           已回報 {log.minutes} 分鐘 · RPE {log.rpe} / 10
         </div>
       )}
-      <div className="button-row">
-        <button className="secondary" onClick={() => open('edit', w.id)}>
-          <Pencil size={17} />
-          編輯課表
-        </button>
+      <div className="workout-actions">
         {!future && !rest && !log && (
           <button
-            className="primary"
+            className="primary full workout-start-button"
             disabled={c.restricted}
             onClick={() => open('timer', w.id)}
           >
-            <Play size={18} />
-            開始訓練
+            <Play size={22} fill="currentColor" />
+            準備開始
           </button>
         )}
+        <button className="secondary full" onClick={() => open('edit', w.id)}>
+          <Pencil size={17} />
+          編輯課表
+        </button>
       </div>
       {!future && !rest && (
         <button className="text-action" onClick={() => open('report', w.id)}>
@@ -355,6 +358,7 @@ export function EditWorkout({
         title="刪除這堂課表？"
         description="將從訓練計畫移除這堂課表。"
         action="刪除課表"
+        haptic="medium"
         busy={busy}
         onConfirm={async () => {
           if (
@@ -614,6 +618,7 @@ export function SuggestionPanel({
           <p className="info-note">AI 只提出建議，確認後才會修改課表。</p>
           <button
             className="primary full"
+            data-haptic="light"
             disabled={busy}
             onClick={() => decide(true)}
           >
@@ -728,7 +733,7 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
   const [running, setRunning] = useState(false),
     [elapsed, setElapsed] = useState(0),
     [laps, setLaps] = useState<{ name: string; seconds: number }[]>([]),
-    [mode, setMode] = useState('standard');
+    [mode, setMode] = useState(w?.sport === 'HYROX' ? 'hyrox' : 'standard');
   const start = useRef(0),
     acc = useRef(0);
   useEffect(() => {
@@ -759,88 +764,193 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
       : mode === 'triathlon'
         ? ['游泳', 'T1 轉換', '單車', 'T2 轉換', '跑步']
         : ['訓練'];
+  const target =
+    state.settings.baselinesKnown === false
+      ? { value: `RPE ${w.zone === 2 ? '3–4' : '6–7'}`, unit: '' }
+      : w.sport === 'Bike'
+        ? {
+            value: String(
+              Math.round(state.settings.ftp * (w.zone === 2 ? 0.65 : 0.9)),
+            ),
+            unit: 'W',
+          }
+        : w.sport === 'Swim'
+          ? { value: state.settings.swimPace, unit: '/100m' }
+          : w.sport === 'Run'
+            ? { value: state.settings.runPace, unit: '/km' }
+            : { value: `Zone ${w.zone}`, unit: '' };
+  const distanceValue =
+    w.distance > 0
+      ? state.settings.units === 'mi'
+        ? (w.distance * 0.621371).toFixed(1)
+        : String(w.distance)
+      : `Zone ${w.zone}`;
+  const distanceUnit =
+    w.distance > 0 ? (state.settings.units === 'mi' ? 'mi' : 'km') : '';
+  const activeSegment = segments[Math.min(laps.length, segments.length - 1)];
+  const lapSeconds = laps.reduce((total, lap) => total + lap.seconds, 0);
+  const segmentElapsed = Math.max(0, elapsed - lapSeconds);
   const pause = () => {
     acc.current += Math.floor((Date.now() - start.current) / 1000);
     setElapsed(acc.current);
     setRunning(false);
   };
+  const completeSegment = () => {
+    setLaps([
+      ...laps,
+      {
+        name: activeSegment,
+        seconds: elapsed - lapSeconds,
+      },
+    ]);
+    if (laps.length === segments.length - 1 && running) pause();
+  };
+
+  if (!running && elapsed === 0) {
+    return (
+      <div className="panel-body timer-preflight">
+        <div className="timer-intro">
+          <SportIcon sport={w.sport} size={34} />
+          <span className="eyebrow">準備開始 · {sportNames[w.sport]}</span>
+          <h2>{w.title}</h2>
+        </div>
+        <div className="timer-target-grid" aria-label="本次訓練目標">
+          <div>
+            <span>目標時間</span>
+            <strong>{w.minutes}</strong>
+            <small>分鐘</small>
+          </div>
+          <div>
+            <span>{w.distance > 0 ? '目標距離' : '目標強度'}</span>
+            <strong>{distanceValue}</strong>
+            <small>{distanceUnit}</small>
+          </div>
+          <div>
+            <span>配速／強度</span>
+            <strong>{target.value}</strong>
+            <small>{target.unit}</small>
+          </div>
+        </div>
+        <Choice
+          label="計時模式"
+          value={mode}
+          options={[
+            { value: 'standard', label: '一般訓練' },
+            { value: 'hyrox', label: 'HYROX · 17 分段' },
+            { value: 'triathlon', label: '鐵人三項 · T1 / T2' },
+          ]}
+          onChange={setMode}
+        />
+        <div className="preflight-status" aria-label="開始前連線狀態">
+          <span>
+            <Navigation size={17} />
+            {w.sport === 'HYROX' ? '室內計時模式' : 'GPS 待支援裝置定位'}
+          </span>
+          <span>
+            <Watch size={17} />
+            穿戴裝置未連線
+          </span>
+        </div>
+        <button
+          className="primary full timer-start-button"
+          data-haptic="light"
+          onClick={() => setRunning(true)}
+        >
+          <Play size={27} fill="currentColor" />
+          開始訓練
+        </button>
+        <p className="caption timer-disclaimer">
+          目前使用前景計時；請保持此畫面開啟，完成後再送出訓練回報。
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="panel-body form timer-panel">
-      <h3>{w.title}</h3>
-      <Choice
-        label="計時模式"
-        value={mode}
-        options={[
-          { value: 'standard', label: '一般訓練' },
-          { value: 'hyrox', label: 'HYROX · 17 分段' },
-          { value: 'triathlon', label: '鐵人三項 · T1 / T2' },
-        ]}
-        onChange={(v) => {
-          if (!elapsed && !running) setMode(v);
-        }}
-      />
-      <p className="caption">
-        {elapsed || running ? '計時開始後模式鎖定' : '選擇模式後開始計時'}
-      </p>
-      <span className="eyebrow">
-        {laps.length >= segments.length
-          ? '所有分段完成'
-          : segments[laps.length]}
-      </span>
-      <output className="stopwatch">{clock(elapsed)}</output>
-      <button
-        className="primary full timer-primary"
-        disabled={laps.length >= segments.length}
-        onClick={() => (running ? pause() : setRunning(true))}
-      >
-        {running ? <Pause size={24} /> : <Play size={24} />}{' '}
-        {running ? '暫停' : elapsed ? '繼續' : '開始'}
-      </button>
+    <div
+      className={`panel-body timer-live ${mode === 'hyrox' ? 'hyrox-hud' : ''}`}
+    >
+      <div className="timer-live-status">
+        <span>
+          <i className={running ? 'live-dot' : ''} />
+          {running ? '進行中' : '已暫停'}
+        </span>
+        <span>
+          {mode === 'hyrox'
+            ? `${Math.min(laps.length + 1, segments.length)} / ${segments.length} 分段`
+            : sportNames[w.sport]}
+        </span>
+      </div>
+      <div className="timer-segment">
+        <span>當前分段</span>
+        <h2>
+          {laps.length >= segments.length ? '所有分段完成' : activeSegment}
+        </h2>
+      </div>
+      <output className="stopwatch" aria-label={`經過時間 ${clock(elapsed)}`}>
+        {clock(elapsed)}
+      </output>
+      <div className="timer-live-metrics">
+        <div>
+          <span>{mode === 'hyrox' ? '本段時間' : '即時距離'}</span>
+          <strong>{mode === 'hyrox' ? clock(segmentElapsed) : '—'}</strong>
+          <small>{mode === 'hyrox' ? '' : distanceUnit || 'km'}</small>
+        </div>
+        <div>
+          <span>目標配速／強度</span>
+          <strong>{target.value}</strong>
+          <small>{target.unit}</small>
+        </div>
+      </div>
       {elapsed > 0 && laps.length < segments.length && (
         <button
-          className="secondary full"
-          onClick={() => {
-            setLaps([
-              ...laps,
-              {
-                name: segments[laps.length],
-                seconds: elapsed - laps.reduce((n, l) => n + l.seconds, 0),
-              },
-            ]);
-            if (laps.length === segments.length - 1 && running) pause();
-          }}
+          className="primary full timer-segment-button"
+          data-haptic={mode === 'hyrox' ? 'medium' : 'light'}
+          onClick={completeSegment}
         >
           <Flag size={20} />
           {mode === 'standard' ? '完成此段' : '下一分段'}
         </button>
       )}
+      <div className="timer-controls">
+        <button
+          className="secondary"
+          data-haptic="light"
+          disabled={laps.length >= segments.length}
+          onClick={() => (running ? pause() : setRunning(true))}
+        >
+          {running ? <Pause size={21} /> : <Play size={21} />}
+          {running ? '暫停' : '繼續'}
+        </button>
+        <button
+          className="secondary timer-end"
+          data-haptic="medium"
+          onClick={() => {
+            if (running) pause();
+            open('report', w.id);
+          }}
+        >
+          <Square size={18} fill="currentColor" />
+          結束
+        </button>
+      </div>
       {mode === 'triathlon' && elapsed >= 1800 && (
         <p className="info-note">
           已訓練 {Math.floor(elapsed / 60)}{' '}
           分鐘，請依個人補給計畫補充水分與碳水化合物。
         </p>
       )}
-      {laps.map((l, i) => (
-        <div className="exercise-row" key={i}>
-          <span>
-            {i + 1}. {l.name}
-          </span>
-          <strong>{clock(l.seconds)}</strong>
+      {laps.length > 0 && (
+        <div className="timer-laps" aria-label="已完成分段">
+          {laps.slice(-3).map((l, i) => (
+            <div className="exercise-row" key={`${l.name}-${i}`}>
+              <span>{l.name}</span>
+              <strong>{clock(l.seconds)}</strong>
+            </div>
+          ))}
         </div>
-      ))}
-      <p className="caption">
-        切勿鎖定或關閉此頁，分段計時尚未儲存。離開後請於回報填寫實際時長。
-      </p>
-      <button
-        className="text-action"
-        onClick={() => {
-          if (running) pause();
-          open('report', w.id);
-        }}
-      >
-        結束並回報
-        <ArrowRight size={18} />
-      </button>
+      )}
+      <p className="timer-footnote">前景計時中 · 關閉畫面前請先結束並回報</p>
     </div>
   );
 }

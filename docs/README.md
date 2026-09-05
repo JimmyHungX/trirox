@@ -20,6 +20,7 @@
 
 - `CODEX_MASTER_INSTRUCTION.md`：Codex 6 的總指令
 - `DESIGN_SYSTEM.md`：完整 UI / design system 規範
+- `INTERACTION_SPEC.md`：全 App 互動手感與訓練計時畫面規範
 - `REFERENCE_MAPPING.md`：三張參考圖各自代表什麼
 - `FUNCTIONS_AND_PAGES_TODO.md`：等待補上的功能與頁面清單
 - `references/01_today_final.png`

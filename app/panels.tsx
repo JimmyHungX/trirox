@@ -79,6 +79,7 @@ export function Confirm({
   action,
   onConfirm,
   busy,
+  haptic = 'light',
 }: {
   open: boolean;
   setOpen: (v: boolean) => void;
@@ -87,6 +88,7 @@ export function Confirm({
   action: string;
   onConfirm: () => void;
   busy: boolean;
+  haptic?: 'light' | 'medium';
 }) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -95,7 +97,12 @@ export function Confirm({
         <AlertDialogDescription>{description}</AlertDialogDescription>
         <div className="button-row">
           <AlertDialogCancel disabled={busy}>取消</AlertDialogCancel>
-          <button className="primary" disabled={busy} onClick={onConfirm}>
+          <button
+            className="primary"
+            data-haptic={haptic}
+            disabled={busy}
+            onClick={onConfirm}
+          >
             {action}
           </button>
         </div>
@@ -378,6 +385,7 @@ function RacePanel({ panel, state, open, save, busy }: PanelProps) {
         title="刪除這場賽事？"
         description="將移除賽事與目標成績，訓練紀錄會保留。"
         action="刪除賽事"
+        haptic="medium"
         busy={busy}
         onConfirm={async () => {
           if (

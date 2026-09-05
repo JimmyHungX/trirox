@@ -122,7 +122,9 @@ export function Ring({
       <div
         aria-label={frameless ? label + ' ' + (score ?? '尚無數據') : undefined}
       >
-        <strong>{score ?? '—'}</strong>
+        <strong key={score ?? 'empty'} className="number-transition">
+          {score ?? '—'}
+        </strong>
         <span>{label === '恢復分數' ? '/100' : label}</span>
       </div>
     </div>
