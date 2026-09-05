@@ -95,7 +95,7 @@ npm run build:vercel
 
 ## 作品展示
 
-- 作品展示網址：[TRIROX 線上版]((https://trirox.vercel.app/))
+- 作品展示網址：[TRIROX 線上版]([https://trirox.vercel.app/])
 - 原始碼：[github.com/JimmyHungX/trirox](https://github.com/JimmyHungX/trirox)
 - 評選影片：尚未提供
 
