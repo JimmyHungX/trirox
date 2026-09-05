@@ -105,6 +105,14 @@ test('generator respects duration, available sports and consecutive-day ceiling'
   );
   assert.equal(ws[2].sport, 'Rest');
 });
+test('unknown ability baselines do not fabricate a running distance', () => {
+  const s = seed(today, false);
+  s.settings.days = [1, 2, 3, 4, 5, 6, 0];
+  s.settings.equipment = ['Run'];
+  s.settings.baselinesKnown = false;
+  const run = generateWeek(s, today, today).find((w) => w.sport === 'Run');
+  assert.equal(run.distance, 0);
+});
 test('no equipment yields rest rather than an impossible workout', () => {
   const s = seed(today, false);
   s.settings.equipment = [];

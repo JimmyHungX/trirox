@@ -10,6 +10,9 @@ Node 22.13 or newer. Run npm install, npm run db:generate (only after schema edi
 
 ## Implemented
 
+- Four-step first-use setup turns goals, availability, disciplines and physical limits into a conservative first week.
+- Unknown pace and power baselines stay unknown; early sessions use duration, Zone and perceived effort instead of fabricated precision.
+- Empty Today and Analysis states guide the athlete to the next useful record before showing derived scores.
 - Today, weekly Plan, single-page Analysis, and six-entry Profile.
 - D1-backed profiles, workouts, races, check-ins, logs, injuries, preferences and AI decisions.
 - Optimistic revision checking prevents concurrent writes from overwriting one another.

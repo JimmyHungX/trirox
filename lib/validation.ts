@@ -27,6 +27,8 @@ export function validState(input: unknown): input is AppState {
       !s ||
       s.schema !== 1 ||
       typeof s.demo !== 'boolean' ||
+      (s.onboardingDismissed !== undefined &&
+        typeof s.onboardingDismissed !== 'boolean') ||
       !text(s.user.name, 80) ||
       !s.user.name.trim() ||
       !num(s.user.height, 80, 250) ||
@@ -46,6 +48,8 @@ export function validState(input: unknown): input is AppState {
       !num(t.ftp, 30, 600) ||
       !pace(t.runPace) ||
       !pace(t.swimPace) ||
+      (t.baselinesKnown !== undefined &&
+        typeof t.baselinesKnown !== 'boolean') ||
       !text(t.level, 50) ||
       !num(t.conservative, 0, 100) ||
       !sport(t.protect) ||

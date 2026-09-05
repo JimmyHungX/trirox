@@ -38,13 +38,15 @@ export function WorkoutPanel(p: PanelProps) {
     cool = Math.min(10, Math.round(w.minutes * 0.2)),
     main = w.minutes - warm - cool;
   const target =
-    w.sport === 'Bike'
-      ? Math.round(state.settings.ftp * (w.zone === 2 ? 0.65 : 0.9)) + ' W'
-      : w.sport === 'Swim'
-        ? state.settings.swimPace + ' /100m'
-        : w.sport === 'Run'
-          ? state.settings.runPace + ' /km'
-          : '穩定動作品質';
+    state.settings.baselinesKnown === false
+      ? `體感強度 RPE ${w.zone === 2 ? '3–4' : '6–7'} / 10`
+      : w.sport === 'Bike'
+        ? Math.round(state.settings.ftp * (w.zone === 2 ? 0.65 : 0.9)) + ' W'
+        : w.sport === 'Swim'
+          ? state.settings.swimPace + ' /100m'
+          : w.sport === 'Run'
+            ? state.settings.runPace + ' /km'
+            : '穩定動作品質';
   return (
     <div className="panel-body form">
       <div className="detail-hero">

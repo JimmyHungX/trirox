@@ -64,6 +64,7 @@ export type Settings = {
   ftp: number;
   runPace: string;
   swimPace: string;
+  baselinesKnown?: boolean;
   level: string;
   equipment: Sport[];
   conservative: number;
@@ -75,6 +76,7 @@ export type Settings = {
 export type AppState = {
   schema: 1;
   demo: boolean;
+  onboardingDismissed?: boolean;
   user: { name: string; height: number; weight: number; experience: string };
   settings: Settings;
   workouts: Workout[];
@@ -295,6 +297,7 @@ export function seed(today = dayKey(), demo = true): AppState {
       ftp: 230,
       runPace: '4:58',
       swimPace: '1:52',
+      baselinesKnown: demo,
       level: '中階',
       equipment: ['Run', 'Bike', 'Swim', 'HYROX'],
       conservative: 60,
@@ -455,7 +458,7 @@ export function generateWeek(
             (state.settings.conservative >= 60 ? '基礎訓練' : '耐力訓練'),
       minutes: duration,
       distance:
-        sport === 'Run'
+        sport === 'Run' && state.settings.baselinesKnown !== false
           ? Number(
               (
                 duration /

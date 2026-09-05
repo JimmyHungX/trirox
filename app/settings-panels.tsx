@@ -53,34 +53,47 @@ export function TrainingSettings({ state, save, busy, close }: PanelProps) {
       />
       <hr />
       <h3>運動能力設定</h3>
-      <div className="form-grid">
-        <Field label="跑步基準配速（分:秒/km）">
-          <input
-            required
-            pattern="[0-9]{1,2}:[0-5][0-9]"
-            value={s.runPace}
-            onChange={(e) => update({ runPace: e.target.value })}
-          />
-        </Field>
-        <Field label="單車 FTP（W）">
-          <input
-            required
-            type="number"
-            min="30"
-            max="600"
-            value={s.ftp}
-            onChange={(e) => update({ ftp: Number(e.target.value) })}
-          />
-        </Field>
-      </div>
-      <Field label="游泳配速（分:秒/100m）">
-        <input
-          required
-          pattern="[0-9]{1,2}:[0-5][0-9]"
-          value={s.swimPace}
-          onChange={(e) => update({ swimPace: e.target.value })}
+      <div className="toggle-row">
+        <label htmlFor="baselines-known">我知道自己的配速與 FTP</label>
+        <Switch
+          id="baselines-known"
+          aria-label="我知道自己的配速與 FTP"
+          checked={s.baselinesKnown !== false}
+          onCheckedChange={(baselinesKnown) => update({ baselinesKnown })}
         />
-      </Field>
+      </div>
+      {s.baselinesKnown !== false && (
+        <>
+          <div className="form-grid">
+            <Field label="跑步基準配速（分:秒/km）">
+              <input
+                required
+                pattern="[0-9]{1,2}:[0-5][0-9]"
+                value={s.runPace}
+                onChange={(e) => update({ runPace: e.target.value })}
+              />
+            </Field>
+            <Field label="單車 FTP（W）">
+              <input
+                required
+                type="number"
+                min="30"
+                max="600"
+                value={s.ftp}
+                onChange={(e) => update({ ftp: Number(e.target.value) })}
+              />
+            </Field>
+          </div>
+          <Field label="游泳配速（分:秒/100m）">
+            <input
+              required
+              pattern="[0-9]{1,2}:[0-5][0-9]"
+              value={s.swimPace}
+              onChange={(e) => update({ swimPace: e.target.value })}
+            />
+          </Field>
+        </>
+      )}
       <Choice
         label="HYROX / 重訓程度"
         value={s.level}

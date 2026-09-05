@@ -6,6 +6,14 @@ test('valid demo and empty personal records are accepted', () => {
   assert.equal(validState(seed('2026-09-05')), true);
   assert.equal(validState(seed('2026-09-05', false)), true);
 });
+test('optional onboarding flags must be boolean', () => {
+  const s = seed('2026-09-05', false);
+  s.onboardingDismissed = true;
+  s.settings.baselinesKnown = false;
+  assert.equal(validState(s), true);
+  s.onboardingDismissed = 'yes';
+  assert.equal(validState(s), false);
+});
 test('malformed payloads never throw and are rejected', () => {
   for (const x of [null, {}, [], { schema: 1 }, 'text'])
     assert.equal(validState(x), false);

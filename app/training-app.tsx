@@ -56,6 +56,7 @@ import {
 } from '@/lib/training';
 import { Panel } from './panels';
 import { registerTrainingTools } from '@/lib/webmcp';
+import { Onboarding } from './onboarding';
 export type PanelState = { type: string; id?: string };
 const navs = [
   { id: 'today', label: '今日', icon: Home },
@@ -199,6 +200,17 @@ export default function TrainingApp() {
         </div>
       </main>
     );
+  if (state.demo && !state.onboardingDismissed)
+    return (
+      <Onboarding
+        save={save}
+        busy={busy}
+        error={error}
+        onExplore={async () => {
+          await save({ ...state, onboardingDismissed: true }, '已開啟示範資料');
+        }}
+      />
+    );
   const m = metrics(state),
     todays = state.workouts
       .filter((w) => w.date === today)
@@ -287,15 +299,15 @@ export default function TrainingApp() {
       <div className="context-line">
         <span>
           {tab === 'today'
-            ? 'TODAY'
+            ? '今天，' + state.user.name
             : tab === 'plan'
-              ? 'YOUR PLAN'
+              ? '你的訓練週'
               : tab === 'analysis'
-                ? 'ANALYSIS'
-                : 'ATHLETE'}
+                ? '身體與表現'
+                : '個人設定'}
         </span>
         <button onClick={() => open('settings')}>
-          {state.demo ? '示範資料' : '個人紀錄'}
+          {state.demo ? '正在使用示範資料' : '個人紀錄'}
           <span className="tiny-dot" />
           {busy ? '儲存中' : '已就緒'}
         </button>
@@ -321,63 +333,89 @@ export default function TrainingApp() {
                   onClick={() => go('analysis')}
                 />
               </SectionHead>
-              <div className="readiness">
-                <Ring score={m.ready ? m.score : null} />
-                <div className="readiness-copy">
-                  <span className={'status ' + (m.ready ? m.color : 'neutral')}>
-                    <i />
-                    {m.ready ? '恢復狀態' : '建立基線中'}
+              {!m.check ? (
+                <button
+                  className="first-action"
+                  onClick={() => open('checkin')}
+                >
+                  <span className="first-action-number">01</span>
+                  <span>
+                    <small>建立今天的訓練依據</small>
+                    <strong>先記錄身體狀態</strong>
+                    <p>睡眠、疲勞與晨間 HRV，約 60 秒完成。</p>
                   </span>
-                  <h1>{m.ready ? m.status : '認識你的身體'}</h1>
-                  <p>
-                    {m.ready
-                      ? m.score >= 80
-                        ? '身體狀態穩定，依照計畫前進。'
-                        : '今天給身體多一點恢復時間。'
-                      : '累積 7 天晨間 HRV，建立個人恢復基線。'}
-                  </p>
-                </div>
-              </div>
-              <div className="metric-strip">
-                <div>
-                  <span>HRV</span>
-                  <strong>
-                    {m.check?.hrv ?? '—'} <small>ms</small>
-                    {m.hrvDelta !== null && (
-                      <small
-                        className={m.hrvDelta >= 0 ? 'positive' : 'warning'}
+                  <ArrowRight size={22} />
+                </button>
+              ) : (
+                <>
+                  <div className="readiness">
+                    <Ring score={m.ready ? m.score : null} />
+                    <div className="readiness-copy">
+                      <span
+                        className={'status ' + (m.ready ? m.color : 'neutral')}
                       >
-                        {' '}
-                        {m.hrvDelta >= 0 ? '↑' : '↓'}
-                      </small>
-                    )}
-                  </strong>
-                </div>
-                <div>
-                  <span>睡眠</span>
-                  <strong>
-                    {m.check?.sleep !== undefined
-                      ? Math.floor(m.check.sleep) +
-                        ' 小時 ' +
-                        Math.round((m.check.sleep % 1) * 60) +
-                        ' 分'
-                      : '—'}
-                  </strong>
-                </div>
-                <div>
-                  <span>主觀疲勞</span>
-                  <strong>
-                    {m.check?.fatigue !== undefined
-                      ? m.check.fatigue <= 2
-                        ? '低'
-                        : m.check.fatigue === 3
-                          ? '中'
-                          : '高'
-                      : '—'}{' '}
-                    <i className={'tiny-dot ' + m.color} />
-                  </strong>
-                </div>
-              </div>
+                        <i />
+                        {m.ready ? '恢復狀態' : '建立基線中'}
+                      </span>
+                      <h1>{m.ready ? m.status : '認識你的身體'}</h1>
+                      <p>
+                        {m.ready
+                          ? m.score >= 80
+                            ? '身體狀態穩定，依照計畫前進。'
+                            : '今天給身體多一點恢復時間。'
+                          : '已累積 ' +
+                            Math.min(
+                              7,
+                              state.checkins.filter(
+                                (c) => c.date <= today && c.hrv !== undefined,
+                              ).length,
+                            ) +
+                            ' / 7 天晨間 HRV。'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="metric-strip">
+                    <div>
+                      <span>HRV</span>
+                      <strong>
+                        {m.check?.hrv ?? '—'} <small>ms</small>
+                        {m.hrvDelta !== null && (
+                          <small
+                            className={m.hrvDelta >= 0 ? 'positive' : 'warning'}
+                          >
+                            {' '}
+                            {m.hrvDelta >= 0 ? '↑' : '↓'}
+                          </small>
+                        )}
+                      </strong>
+                    </div>
+                    <div>
+                      <span>睡眠</span>
+                      <strong>
+                        {m.check?.sleep !== undefined
+                          ? Math.floor(m.check.sleep) +
+                            ' 小時 ' +
+                            Math.round((m.check.sleep % 1) * 60) +
+                            ' 分'
+                          : '—'}
+                      </strong>
+                    </div>
+                    <div>
+                      <span>主觀疲勞</span>
+                      <strong>
+                        {m.check?.fatigue !== undefined
+                          ? m.check.fatigue <= 2
+                            ? '低'
+                            : m.check.fatigue === 3
+                              ? '中'
+                              : '高'
+                          : '—'}{' '}
+                        <i className={'tiny-dot ' + m.color} />
+                      </strong>
+                    </div>
+                  </div>
+                </>
+              )}
             </section>
             {showSuggestion && (
               <button
@@ -652,6 +690,28 @@ export default function TrainingApp() {
               <h1>分析</h1>
               <span className="muted">近 7 天</span>
             </div>
+            {!state.checkins.length && !state.logs.length && (
+              <section className="analysis-get-started">
+                <span className="eyebrow">你的分析會從今天開始</span>
+                <h2>先累積可比較的個人資料</h2>
+                <p>
+                  完成每日身體紀錄與訓練回報後，TRIROX
+                  才會開始判斷恢復與訓練干擾。
+                </p>
+                <button onClick={() => open('checkin')}>
+                  <span>
+                    <i>1</i>完成今天的身體紀錄
+                  </span>
+                  <ArrowRight size={19} />
+                </button>
+                <button onClick={() => go('today')}>
+                  <span>
+                    <i>2</i>完成第一堂訓練並回報
+                  </span>
+                  <ArrowRight size={19} />
+                </button>
+              </section>
+            )}
             <section className="analysis-recovery">
               <SectionHead title="身體狀況" />
               <div className="analysis-body">
@@ -797,11 +857,17 @@ export default function TrainingApp() {
                     s === 'Run'
                       ? paces.length
                         ? pace(paces.at(-1)!)
-                        : state.settings.runPace
+                        : state.settings.baselinesKnown === false
+                          ? '—'
+                          : state.settings.runPace
                       : s === 'Bike'
-                        ? state.settings.ftp
+                        ? state.settings.baselinesKnown === false
+                          ? '—'
+                          : state.settings.ftp
                         : s === 'Swim'
-                          ? state.settings.swimPace
+                          ? state.settings.baselinesKnown === false
+                            ? '—'
+                            : state.settings.swimPace
                           : (state.races.find(
                               (r) => r.completed && r.type === 'HYROX',
                             )?.result ?? '—');
@@ -828,11 +894,15 @@ export default function TrainingApp() {
                         </small>
                       </strong>
                       <small className="muted">
-                        {s === 'Run' && logs.length
-                          ? '最近訓練平均'
-                          : s === 'HYROX'
-                            ? '已完成賽事'
-                            : '能力基準'}
+                        {state.settings.baselinesKnown === false &&
+                        s !== 'HYROX' &&
+                        !(s === 'Run' && logs.length)
+                          ? '尚未設定'
+                          : s === 'Run' && logs.length
+                            ? '最近訓練平均'
+                            : s === 'HYROX'
+                              ? '已完成賽事'
+                              : '能力基準'}
                       </small>
                       {s === 'Run' && paces.length > 1 ? (
                         <Spark values={paces} label="跑步配速" />
