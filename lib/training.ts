@@ -100,6 +100,10 @@ export const sportNames: Record<Sport, string> = {
 };
 export const sports: Sport[] = ['Run', 'Bike', 'Swim', 'HYROX', 'Rest'];
 export const parts: Part[] = ['上肢', '下肢', '核心'];
+export const exclusionTags = ['感冒', '生理期', '出差', '壓力大'] as const;
+export function shouldExcludeCheckIn(tags: string[]) {
+  return tags.some((tag) => (exclusionTags as readonly string[]).includes(tag));
+}
 export function dayKey(date = new Date()) {
   return (
     date.getFullYear() +
@@ -158,9 +162,24 @@ export function cns(values: number[], current?: number) {
     score: clamp(90 - z * 25, 0, 100),
   };
 }
-export function acwr(logs: Log[], today = dayKey()) {
+export function acwr(
+  logs: Log[],
+  today = dayKey(),
+  {
+    checkins = [],
+    excludeFlagged = false,
+  }: { checkins?: CheckIn[]; excludeFlagged?: boolean } = {},
+) {
+  const excludedDates = excludeFlagged
+    ? new Set(
+        checkins
+          .filter((check) => check.exclusion_flag)
+          .map((check) => check.date),
+      )
+    : new Set<string>();
+  const includedLogs = logs.filter((log) => !excludedDates.has(log.date));
   const sum = (days: number) =>
-    logs
+    includedLogs
       .filter((l) => l.date <= today && l.date >= addDays(today, -days + 1))
       .reduce((n, l) => n + load(l), 0);
   const acute = sum(7) / 7,
@@ -170,7 +189,7 @@ export function acwr(logs: Log[], today = dayKey()) {
     value: chronic ? acute / chronic : null,
     acute,
     chronic,
-    ready: logs.some((l) => l.date <= addDays(today, -27)),
+    ready: includedLogs.some((l) => l.date <= addDays(today, -27)),
   };
 }
 export function muscleLoads(
@@ -178,9 +197,21 @@ export function muscleLoads(
   today = dayKey(),
   checkins: CheckIn[] = [],
 ) {
+  const checkinsByDate = new Map(checkins.map((check) => [check.date, check]));
+  const excludedDates = new Set(
+    checkins.filter((check) => check.exclusion_flag).map((check) => check.date),
+  );
+  // Today's soreness intentionally reweights the rolling seven-day history:
+  // it represents a current symptom of cumulative recent load, not one session.
+  const todaySoreness = checkinsByDate.get(today)?.soreness ?? [];
   return parts.map((part, i) =>
     logs
-      .filter((l) => l.date <= today && l.date >= addDays(today, -6))
+      .filter(
+        (l) =>
+          l.date <= today &&
+          l.date >= addDays(today, -6) &&
+          !excludedDates.has(l.date),
+      )
       .reduce(
         (sum, l) =>
           sum +
@@ -189,8 +220,8 @@ export function muscleLoads(
             model.muscle[l.sport][i] *
             (0.5 + l.rpe / 10) *
             (l.soreness.includes(part) ||
-            checkins.find((c) => c.date === today)?.soreness.includes(part) ||
-            checkins.find((c) => c.date === l.date)?.soreness.includes(part)
+            todaySoreness.includes(part) ||
+            checkinsByDate.get(l.date)?.soreness.includes(part)
               ? 1.25
               : 1),
         0,
@@ -257,6 +288,19 @@ export function conflict(state: AppState, w: Workout, today = dayKey()) {
     0,
   );
   const restricted = state.injuries.some((i) => i.excluded.includes(w.sport));
+  const hrvLevel = m.central.z >= 2.5 ? 3 : m.central.z >= 1.5 ? 2 : 0;
+  const muscleLevel =
+    relevant >= 2 ? 3 : relevant >= 1.5 ? 2 : relevant > 1.3 ? 1 : 0;
+  const hrvThreshold = hrvLevel === 3 ? 2.5 : 1.5;
+  const muscleThreshold = muscleLevel === 3 ? 2 : muscleLevel === 2 ? 1.5 : 1.3;
+  const hrvExcess = hrvLevel ? m.central.z / hrvThreshold : 0;
+  const muscleExcess = muscleLevel ? relevant / muscleThreshold : 0;
+  const hrvReason = '今日 HRV 低於個人基線，中央神經負荷偏高。';
+  const muscleReason = '相關肌群的近 7 天估算負荷高於歷史基準。';
+  const causesAreClose =
+    hrvLevel > 0 &&
+    hrvLevel === muscleLevel &&
+    Math.abs(hrvExcess - muscleExcess) <= 0.15;
   const severity =
     restricted || m.central.z >= 2.5 || relevant >= 2
       ? '嚴重'
@@ -272,11 +316,14 @@ export function conflict(state: AppState, w: Workout, today = dayKey()) {
     current,
     reason: restricted
       ? '這項訓練與你設定的傷病限制衝突。'
-      : m.central.z >= 1.5
-        ? '今日 HRV 低於個人基線，中央神經負荷偏高。'
-        : relevant > 1.3
-          ? '相關肌群的近 7 天估算負荷高於歷史基準。'
-          : '目前未偵測到明顯訓練衝突。',
+      : causesAreClose
+        ? '今日 HRV 低於個人基線，且相關肌群的近 7 天估算負荷高於歷史基準。'
+        : muscleLevel > hrvLevel ||
+            (muscleLevel === hrvLevel && muscleExcess > hrvExcess)
+          ? muscleReason
+          : hrvLevel > 0
+            ? hrvReason
+            : '目前未偵測到明顯訓練衝突。',
     minutes:
       severity === '嚴重'
         ? 20

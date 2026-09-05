@@ -1,6 +1,6 @@
 # Verification
 
-- Core algorithm and input validation tests: 18 passed.
+- Core algorithm and input validation tests: 20 passed.
 - TypeScript typecheck: passed.
 - Application lint (app, lib, db): passed. Generated component catalog is excluded from application lint.
 - Local API save/read-back, stale revision 409, invalid record 400, cross-origin 403: passed without changing record content.

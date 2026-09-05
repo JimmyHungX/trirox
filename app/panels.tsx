@@ -15,7 +15,9 @@ import {
   type Race,
   dayKey,
   daysUntil,
+  exclusionTags,
   parts,
+  shouldExcludeCheckIn,
   uid,
 } from '@/lib/training';
 import { Field, Choice, Checks, Empty, IconButton } from './ui';
@@ -125,7 +127,7 @@ function CheckInPanel({ state, save, busy, close }: PanelProps) {
               ...state.checkins.filter((c) => c.date !== today),
               {
                 ...check,
-                exclusion_flag: Boolean(check.tags.length || check.note.trim()),
+                exclusion_flag: shouldExcludeCheckIn(check.tags),
               },
             ],
           })
@@ -215,7 +217,7 @@ function CheckInPanel({ state, save, busy, close }: PanelProps) {
       />
       <Checks
         label="生理狀況"
-        options={['感冒', '生理期', '出差', '壓力大']}
+        options={[...exclusionTags]}
         values={check.tags}
         onChange={(tags) => update({ tags })}
       />
@@ -227,7 +229,7 @@ function CheckInPanel({ state, save, busy, close }: PanelProps) {
           maxLength={1000}
         />
       </Field>
-      {(check.tags.length > 0 || check.note.trim()) && (
+      {shouldExcludeCheckIn(check.tags) && (
         <p className="info-note">
           今天會排除於訓練干擾歸因，恢復分數仍照實計算。
         </p>

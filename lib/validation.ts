@@ -1,4 +1,4 @@
-import type { AppState } from './training';
+import { shouldExcludeCheckIn, type AppState } from './training.ts';
 const text = (v: unknown, max = 1000) =>
   typeof v === 'string' && v.length <= max;
 const num = (v: unknown, min: number, max: number) =>
@@ -124,7 +124,7 @@ export function validState(input: unknown): input is AppState {
           Array.isArray(c.tags) &&
           c.tags.every((t) => text(t, 100)) &&
           text(c.note) &&
-          c.exclusion_flag === Boolean(c.tags.length || c.note.trim()),
+          c.exclusion_flag === shouldExcludeCheckIn(c.tags),
       )
     )
       return false;

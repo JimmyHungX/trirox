@@ -30,6 +30,13 @@ test('invalid dates, duplicate logs and impossible values are rejected', () => {
 });
 test('exclusion flags must match conditions', () => {
   const s = seed('2026-09-05');
+  s.checkins[0].note = '今天配速破 PB';
+  assert.equal(validState(s), true);
+  s.checkins[0].exclusion_flag = true;
+  assert.equal(validState(s), false);
+  s.checkins[0].exclusion_flag = false;
+  s.checkins[0].tags = ['配速破 PB'];
+  assert.equal(validState(s), true);
   s.checkins[0].tags = ['感冒'];
   assert.equal(validState(s), false);
   s.checkins[0].exclusion_flag = true;

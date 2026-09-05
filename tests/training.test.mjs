@@ -42,6 +42,55 @@ test('future logs never enter acute load', () => {
   ];
   assert.equal(acwr(logs, today).acute, 40 / 7);
 });
+test('flagged dates are excluded from attribution loads', () => {
+  const logs = [
+    {
+      id: 'today',
+      planId: 'today-plan',
+      date: today,
+      sport: 'Run',
+      minutes: 40,
+      distance: 8,
+      zone: 2,
+      rpe: 5,
+      fatigue: 2,
+      soreness: [],
+      note: '',
+    },
+    {
+      id: 'yesterday',
+      planId: 'yesterday-plan',
+      date: addDays(today, -1),
+      sport: 'Run',
+      minutes: 20,
+      distance: 4,
+      zone: 2,
+      rpe: 5,
+      fatigue: 2,
+      soreness: [],
+      note: '',
+    },
+  ];
+  const checkins = [
+    {
+      date: today,
+      soreness: [],
+      tags: ['感冒'],
+      note: '',
+      exclusion_flag: true,
+    },
+  ];
+  const attributedRatio = acwr(logs, today, {
+    checkins,
+    excludeFlagged: true,
+  });
+  assert.equal(attributedRatio.acute, 40 / 7);
+  assert.equal(attributedRatio.chronic, 40 / 28);
+  assert.deepEqual(
+    muscleLoads(logs, today, checkins),
+    muscleLoads([logs[1]], today, checkins),
+  );
+});
 test('exclusion flag preserves current recovery score', () => {
   const s = seed(today),
     before = metrics(s, today).score;
@@ -72,6 +121,62 @@ test('conflict calculation never edits user plans', () => {
     ),
   );
   assert.equal(JSON.stringify(s.workouts), original);
+});
+test('conflict reason follows the strongest normalized cause', () => {
+  const s = seed(today, false);
+  s.logs = [
+    { date: today, minutes: 40 },
+    { date: addDays(today, -7), minutes: 20 },
+    { date: addDays(today, -14), minutes: 20 },
+    { date: addDays(today, -21), minutes: 20 },
+  ].map((log, i) => ({
+    id: `log-${i}`,
+    planId: `plan-${i}`,
+    sport: 'Run',
+    distance: 0,
+    zone: 2,
+    rpe: 5,
+    fatigue: 2,
+    soreness: [],
+    note: '',
+    ...log,
+  }));
+  s.checkins = [
+    ...Array.from({ length: 7 }, (_, i) => ({
+      date: addDays(today, -i - 1),
+      hrv: 60,
+      soreness: [],
+      tags: [],
+      note: '',
+      exclusion_flag: false,
+    })),
+    {
+      date: today,
+      hrv: 58.5,
+      soreness: [],
+      tags: [],
+      note: '',
+      exclusion_flag: false,
+    },
+  ];
+  const result = conflict(
+    s,
+    {
+      id: 'workout',
+      date: today,
+      time: '07:00',
+      sport: 'Run',
+      title: 'Test run',
+      minutes: 40,
+      distance: 8,
+      zone: 3,
+      version: 1,
+    },
+    today,
+  );
+  assert.equal(result.relevant, 2);
+  assert.match(result.reason, /肌群/);
+  assert.doesNotMatch(result.reason, /HRV/);
 });
 test('injuries override training capability', () => {
   const s = seed(today);
