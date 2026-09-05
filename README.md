@@ -1,4 +1,6 @@
-# TRIROX iOS Web App
+# trirox
+
+TRIROX iOS Web App
 
 A private, mobile-first training web app built from the supplied v3 project pack.
 
@@ -28,4 +30,3 @@ The source engineering specification in docs is unmodified. All algorithm consta
 ACWR uses (7-day sum / 7) divided by (28-day sum / 28), consistently choosing the rolling-average option in the specification.
 The timer is foreground-only and split times are not durable yet.
 Browser WebMCP support is feature-detected; its runtime contract has not been verified in a supporting browser.
-
