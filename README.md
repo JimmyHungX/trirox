@@ -11,6 +11,7 @@ TRIROX 的目標是讓初次使用者在數分鐘內輸入目標、可訓練時�
 ## 核心功能
 
 - 四步驟首次設定：賽事目標、可訓練日、運動項目、能力數據與傷病限制。
+- 預設示範資料：首次開啟即可檢查 31 天身體紀錄、歷史訓練、本週課表與賽事資料。
 - 今日頁：顯示身體紀錄入口、恢復狀態、今日課表與下一場賽事。
 - 週課表：建立、檢視、編輯與確認每週混合訓練安排。
 - 訓練回報：記錄實際時間、距離、強度、RPE、疲勞與痠痛部位。
@@ -42,14 +43,14 @@ flowchart LR
 
 ## 使用技術
 
-| 類型 | 技術／服務 | 用途 |
-| --- | --- | --- |
-| AI 模型 | 規則式訓練推薦引擎 | 計算恢復狀態、標準化 ACWR、訓練干擾與保守調整；目前未呼叫外部生成式 AI |
-| 前端 | React 19、TypeScript、Vinext、Base UI、Lucide | PWA 介面、表單、圖示與互動流程 |
-| 後端 | Vinext Server Functions、Cloudflare Workers | 提供 `/api/state`、資料驗證與儲存流程 |
-| 資料庫 | Cloudflare D1、Drizzle ORM | 儲存個人資料、課表、身體紀錄、訓練回報、賽事與設定 |
-| Sponsor 技術 | OpenAI Sites | 私人網站託管、版本保存與正式部署 |
-| 品質工具 | Node.js Test Runner、TypeScript、Oxlint、Oxfmt | 單元測試、型別檢查、程式檢查與格式化 |
+| 類型         | 技術／服務                                     | 用途                                                                   |
+| ------------ | ---------------------------------------------- | ---------------------------------------------------------------------- |
+| AI 模型      | 規則式訓練推薦引擎                             | 計算恢復狀態、標準化 ACWR、訓練干擾與保守調整；目前未呼叫外部生成式 AI |
+| 前端         | React 19、TypeScript、Vinext、Base UI、Lucide  | PWA 介面、表單、圖示與互動流程                                         |
+| 後端         | Vinext Server Functions、Cloudflare Workers    | 提供 `/api/state`、資料驗證與儲存流程                                  |
+| 資料庫       | Cloudflare D1、Drizzle ORM                     | 儲存個人資料、課表、身體紀錄、訓練回報、賽事與設定                     |
+| Sponsor 技術 | OpenAI Sites                                   | 私人網站託管、版本保存與正式部署                                       |
+| 品質工具     | Node.js Test Runner、TypeScript、Oxlint、Oxfmt | 單元測試、型別檢查、程式檢查與格式化                                   |
 
 ## 安裝與執行
 
@@ -103,23 +104,23 @@ npm run build
 
 ## 第三方服務、資料與素材
 
-| 項目 | 來源 | 授權／使用方式 |
-| --- | --- | --- |
-| React / React DOM | [react.dev](https://react.dev/) | MIT License |
-| Vinext | [cloudflare/vinext](https://github.com/cloudflare/vinext) | MIT License |
-| Drizzle ORM | [orm.drizzle.team](https://orm.drizzle.team/) | Apache License 2.0 |
-| Base UI | [base-ui.com](https://base-ui.com/) | MIT License |
-| Lucide Icons | [lucide.dev](https://lucide.dev/) | ISC License |
-| Cloudflare Workers / D1 | [developers.cloudflare.com](https://developers.cloudflare.com/) | 依 Cloudflare 服務條款使用 |
-| OpenAI Sites | OpenAI Sites 專案服務 | 依 OpenAI 服務條款使用；部署維持私人存取 |
-| 工程規格與 UI 參考圖 | `docs/` | 專案擁有者提供，僅供本專案實作使用 |
+| 項目                    | 來源                                                            | 授權／使用方式                           |
+| ----------------------- | --------------------------------------------------------------- | ---------------------------------------- |
+| React / React DOM       | [react.dev](https://react.dev/)                                 | MIT License                              |
+| Vinext                  | [cloudflare/vinext](https://github.com/cloudflare/vinext)       | MIT License                              |
+| Drizzle ORM             | [orm.drizzle.team](https://orm.drizzle.team/)                   | Apache License 2.0                       |
+| Base UI                 | [base-ui.com](https://base-ui.com/)                             | MIT License                              |
+| Lucide Icons            | [lucide.dev](https://lucide.dev/)                               | ISC License                              |
+| Cloudflare Workers / D1 | [developers.cloudflare.com](https://developers.cloudflare.com/) | 依 Cloudflare 服務條款使用               |
+| OpenAI Sites            | OpenAI Sites 專案服務                                           | 依 OpenAI 服務條款使用；部署維持私人存取 |
+| 工程規格與 UI 參考圖    | `docs/`                                                         | 專案擁有者提供，僅供本專案實作使用       |
 
 儲存庫不應提交 API 金鑰、Token、OAuth 憑證或真實個人健康資料；本機環境變數、Wrangler 狀態與建置輸出均已排除於版本控制之外。
 
 ## 團隊成員
 
-| 姓名 | 分工 |
-| --- | --- |
+| 姓名       | 分工                               |
+| ---------- | ---------------------------------- |
 | Jimmyhungx | 產品規劃、UI／UX、前後端開發與部署 |
 
 ## License

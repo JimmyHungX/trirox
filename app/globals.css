@@ -625,6 +625,33 @@ section {
   font-size: 15px;
   margin-top: 3px;
 }
+.ring-frameless {
+  aspect-ratio: auto;
+  width: 136px;
+  min-height: 116px;
+  border: 0 !important;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.ring-frameless > div {
+  position: static;
+  min-height: 116px;
+  align-items: flex-start;
+  border: 0 !important;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.ring-frameless strong {
+  font-size: 72px;
+  line-height: 0.95;
+}
+.ring-frameless span {
+  color: #77797d;
+  font-size: 13px;
+  margin-top: 10px;
+}
 .readiness-copy {
   border-left: 1px solid var(--border);
   padding-left: 26px;
@@ -1706,6 +1733,9 @@ section {
   }
   .analysis-body .ring {
     width: 128px;
+  }
+  .analysis-body .ring-frameless {
+    width: 112px;
   }
   .analysis-metrics {
     padding-left: 18px;

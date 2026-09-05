@@ -200,7 +200,7 @@ export default function TrainingApp() {
         </div>
       </main>
     );
-  if (state.demo && !state.onboardingDismissed)
+  if (state.demo && state.onboardingDismissed === false)
     return (
       <Onboarding
         save={save}
@@ -349,7 +349,7 @@ export default function TrainingApp() {
               ) : (
                 <>
                   <div className="readiness">
-                    <Ring score={m.ready ? m.score : null} />
+                    <Ring frameless score={m.ready ? m.score : null} />
                     <div className="readiness-copy">
                       <span
                         className={'status ' + (m.ready ? m.color : 'neutral')}
@@ -716,7 +716,7 @@ export default function TrainingApp() {
               <SectionHead title="身體狀況" />
               <div className="analysis-body">
                 <div>
-                  <Ring score={m.ready ? m.score : null} />
+                  <Ring frameless score={m.ready ? m.score : null} />
                   <p className="ring-caption">恢復分數</p>
                 </div>
                 <div className="analysis-metrics">

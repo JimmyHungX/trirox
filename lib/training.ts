@@ -289,6 +289,7 @@ export function seed(today = dayKey(), demo = true): AppState {
   const state: AppState = {
     schema: 1,
     demo,
+    onboardingDismissed: demo,
     user: { name: '訓練者', height: 175, weight: 70, experience: '中階' },
     settings: {
       days: [1, 2, 3, 4, 5, 6],

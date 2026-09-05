@@ -78,40 +78,50 @@ export function Ring({
   score,
   label = '恢復分數',
   small = false,
+  frameless = false,
 }: {
   score: number | null;
   label?: string;
   small?: boolean;
+  frameless?: boolean;
 }) {
   return (
     <div
-      className={'ring ' + (small ? 'ring-small' : '')}
-      role="img"
-      aria-label={label + ' ' + (score ?? '尚無數據')}
+      className={
+        'ring ' +
+        (small ? 'ring-small ' : '') +
+        (frameless ? 'ring-frameless' : '')
+      }
+      role={frameless ? undefined : 'img'}
+      aria-label={frameless ? undefined : label + ' ' + (score ?? '尚無數據')}
     >
-      <svg viewBox="0 0 160 160" aria-hidden="true">
-        <circle
-          cx="80"
-          cy="80"
-          r="70"
-          fill="none"
-          stroke="#e8e9eb"
-          strokeWidth="8"
-        />
-        <circle
-          cx="80"
-          cy="80"
-          r="70"
-          fill="none"
-          stroke="#111"
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={440}
-          strokeDashoffset={440 * (1 - (score ?? 0) / 100)}
-          transform="rotate(-90 80 80)"
-        />
-      </svg>
-      <div>
+      {!frameless && (
+        <svg viewBox="0 0 160 160" aria-hidden="true">
+          <circle
+            cx="80"
+            cy="80"
+            r="70"
+            fill="none"
+            stroke="#e8e9eb"
+            strokeWidth="8"
+          />
+          <circle
+            cx="80"
+            cy="80"
+            r="70"
+            fill="none"
+            stroke="#111"
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={440}
+            strokeDashoffset={440 * (1 - (score ?? 0) / 100)}
+            transform="rotate(-90 80 80)"
+          />
+        </svg>
+      )}
+      <div
+        aria-label={frameless ? label + ' ' + (score ?? '尚無數據') : undefined}
+      >
         <strong>{score ?? '—'}</strong>
         <span>{label === '恢復分數' ? '/100' : label}</span>
       </div>

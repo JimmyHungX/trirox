@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { seed } from '../lib/training.ts';
 import { validState } from '../lib/validation.ts';
 test('valid demo and empty personal records are accepted', () => {
-  assert.equal(validState(seed('2026-09-05')), true);
+  const demo = seed('2026-09-05');
+  assert.equal(demo.onboardingDismissed, true);
+  assert.equal(validState(demo), true);
   assert.equal(validState(seed('2026-09-05', false)), true);
 });
 test('optional onboarding flags must be boolean', () => {
