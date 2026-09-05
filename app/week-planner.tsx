@@ -76,6 +76,10 @@ export function WeekPlanner({
         onDragCancel={() => setActiveId(null)}
         onDragEnd={(event) => void moveWorkout(event)}
       >
+        <p className="week-gesture-hint">
+          <Trash2 size={15} />
+          向右滑課表可刪除，刪除前會再次確認
+        </p>
         <div className={`week-list${activeId ? ' is-dragging' : ''}`}>
           {dates.map((date) => (
             <WeekDay

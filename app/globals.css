@@ -1452,6 +1452,15 @@ section {
   min-width: 40px;
   height: 44px;
 }
+.week-gesture-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: -4px 0 6px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.5;
+}
 .week-day {
   display: grid;
   grid-template-columns: 45px 1fr;
@@ -1964,6 +1973,18 @@ section {
 .primary:not(:disabled):active,
 .secondary:not(:disabled):active {
   box-shadow: 0 1px 0 rgb(0 0 0 / 12%);
+}
+.primary.destructive-confirm {
+  border-color: var(--destructive) !important;
+  background: var(--destructive) !important;
+  box-shadow: 0 3px 0 rgb(120 42 34 / 20%);
+}
+.confirm-warning {
+  display: block;
+  margin-top: 8px;
+  color: var(--destructive);
+  font-size: 12px;
+  font-weight: 600;
 }
 .full {
   width: 100%;

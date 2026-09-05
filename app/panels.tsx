@@ -90,15 +90,21 @@ export function Confirm({
   busy: boolean;
   haptic?: 'light' | 'medium';
 }) {
+  const destructive = action.includes('刪除');
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogTitle>{title}</AlertDialogTitle>
-        <AlertDialogDescription>{description}</AlertDialogDescription>
+        <AlertDialogDescription>
+          <span>{description}</span>
+          {destructive && (
+            <strong className="confirm-warning">此動作無法復原。</strong>
+          )}
+        </AlertDialogDescription>
         <div className="button-row">
           <AlertDialogCancel disabled={busy}>取消</AlertDialogCancel>
           <button
-            className="primary"
+            className={destructive ? 'primary destructive-confirm' : 'primary'}
             data-haptic={haptic}
             disabled={busy}
             onClick={onConfirm}
