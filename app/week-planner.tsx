@@ -12,8 +12,9 @@ import {
 } from '@dnd-kit/core';
 import { motion, useDragControls, type PanInfo } from 'framer-motion';
 import { Check, GripVertical, Plus, Trash2 } from 'lucide-react';
-import { useRef, useState, type CSSProperties } from 'react';
+import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { haptic } from '@/lib/haptics';
+import { moveWorkoutToSlot, orderedWorkouts } from '@/lib/schedule';
 import type { AppState, Workout } from '@/lib/training';
 import { Confirm } from './panels';
 import { SportIcon } from './ui';
@@ -44,26 +45,37 @@ export function WeekPlanner({
   async function moveWorkout(event: DragEndEvent) {
     setActiveId(null);
     const workout = state.workouts.find((item) => item.id === event.active.id);
-    const destination = event.over ? String(event.over.id) : '';
+    const target = event.over?.data.current as
+      | { date?: unknown; index?: unknown }
+      | undefined;
+    const destination = typeof target?.date === 'string' ? target.date : '';
+    const destinationIndex =
+      typeof target?.index === 'number' ? target.index : -1;
     if (
       !workout ||
       !dates.includes(destination) ||
-      workout.date === destination ||
+      destinationIndex < 0 ||
       state.logs.some((log) => log.planId === workout.id)
     )
       return;
+
+    const result = moveWorkoutToSlot(
+      state.workouts,
+      workout.id,
+      destination,
+      destinationIndex,
+    );
+    if (!result.changed) return;
 
     haptic('light');
     await save(
       {
         ...state,
-        workouts: state.workouts.map((item) =>
-          item.id === workout.id
-            ? { ...item, date: destination, version: item.version + 1 }
-            : item,
-        ),
+        workouts: result.workouts,
       },
-      `已移至 ${shortDate(destination)}`,
+      workout.date === destination
+        ? `已調整 ${shortDate(destination)} 的課表順序`
+        : `已插入 ${shortDate(destination)}，位於第 ${result.index + 1} 堂`,
     );
   }
 
@@ -78,7 +90,7 @@ export function WeekPlanner({
       >
         <p className="week-gesture-hint">
           <Trash2 size={15} />
-          向右滑課表可刪除，刪除前會再次確認
+          拖到課表之間可插入 · 向右滑可刪除
         </p>
         <div className={`week-list${activeId ? ' is-dragging' : ''}`}>
           {dates.map((date) => (
@@ -144,10 +156,14 @@ function WeekDay({
   open: (type: string, id?: string) => void;
   requestDelete: (workout: Workout) => void;
 }) {
-  const { isOver, setNodeRef } = useDroppable({ id: date });
-  const workouts = state.workouts
-    .filter((workout) => workout.date === date)
-    .sort((a, b) => a.time.localeCompare(b.time));
+  const workouts = orderedWorkouts(
+    state.workouts.filter((workout) => workout.date === date),
+  );
+  const { isOver, setNodeRef } = useDroppable({
+    id: `empty-day:${date}`,
+    data: { date, index: 0 },
+    disabled: workouts.length > 0,
+  });
 
   return (
     <div
@@ -164,16 +180,28 @@ function WeekDay({
       </div>
       <div>
         {workouts.length ? (
-          workouts.map((workout) => (
-            <SwipeableWorkout
-              key={workout.id}
-              workout={workout}
-              completed={state.logs.some((log) => log.planId === workout.id)}
-              busy={busy}
-              open={open}
-              requestDelete={requestDelete}
-            />
-          ))
+          <div className="week-workout-stack">
+            <InsertSlot date={date} active={Boolean(activeId)} />
+            {workouts.map((workout, index) => (
+              <WorkoutDropTarget
+                key={workout.id}
+                date={date}
+                index={index + 1}
+                workoutId={workout.id}
+                active={Boolean(activeId)}
+              >
+                <SwipeableWorkout
+                  workout={workout}
+                  completed={state.logs.some(
+                    (log) => log.planId === workout.id,
+                  )}
+                  busy={busy}
+                  open={open}
+                  requestDelete={requestDelete}
+                />
+              </WorkoutDropTarget>
+            ))}
+          </div>
         ) : (
           <button
             className="unscheduled"
@@ -184,6 +212,51 @@ function WeekDay({
           </button>
         )}
       </div>
+    </div>
+  );
+}
+
+function InsertSlot({ date, active }: { date: string; active: boolean }) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `insert-before:${date}`,
+    data: { date, index: 0 },
+    disabled: !active,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`week-insert-slot${active ? ' is-active' : ''}${
+        isOver ? ' is-over' : ''
+      }`}
+      aria-hidden="true"
+    />
+  );
+}
+
+function WorkoutDropTarget({
+  date,
+  index,
+  workoutId,
+  active,
+  children,
+}: {
+  date: string;
+  index: number;
+  workoutId: string;
+  active: boolean;
+  children: ReactNode;
+}) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `insert-after:${workoutId}`,
+    data: { date, index },
+    disabled: !active,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`week-workout-drop${isOver ? ' is-over' : ''}`}
+    >
+      {children}
     </div>
   );
 }

@@ -88,7 +88,9 @@ export function validState(input: unknown): input is AppState {
           Number.isInteger(w.zone) &&
           num(w.zone, 1, 5) &&
           Number.isInteger(w.version) &&
-          w.version >= 1,
+          w.version >= 1 &&
+          (w.order === undefined ||
+            (Number.isInteger(w.order) && num(w.order, 0, 10000))),
       )
     )
       return false;

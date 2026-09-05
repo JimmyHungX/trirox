@@ -61,6 +61,7 @@ import { Panel } from './panels';
 import { registerTrainingTools } from '@/lib/webmcp';
 import { validState } from '@/lib/validation';
 import { haptic } from '@/lib/haptics';
+import { orderedWorkouts } from '@/lib/schedule';
 import { Onboarding } from './onboarding';
 import { WeekPlanner } from './week-planner';
 
@@ -122,9 +123,7 @@ function TodayTrainingShortcut({
         <SportIcon sport={active.sport} />
         <span className="today-training-copy">
           <small>
-            {restricted
-              ? '今天需要先調整'
-              : `今天 · ${active.time} 快速開始`}
+            {restricted ? '今天需要先調整' : `今天 · ${active.time} 快速開始`}
           </small>
           <strong>{active.title}</strong>
           <span>
@@ -385,9 +384,7 @@ export default function TrainingApp() {
       />
     );
   const m = metrics(state),
-    todays = state.workouts
-      .filter((w) => w.date === today)
-      .sort((a, b) => a.time.localeCompare(b.time)),
+    todays = orderedWorkouts(state.workouts.filter((w) => w.date === today)),
     completed = (w: Workout) => state.logs.some((l) => l.planId === w.id),
     race = state.races
       .filter((r) => !r.completed && r.date >= today)

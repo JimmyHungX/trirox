@@ -10,6 +10,7 @@ export type Workout = {
   distance: number;
   zone: number;
   version: number;
+  order?: number;
   adjusted?: boolean;
 };
 export type Log = {
