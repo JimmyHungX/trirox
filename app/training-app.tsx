@@ -61,6 +61,7 @@ import { registerTrainingTools } from '@/lib/webmcp';
 import { validState } from '@/lib/validation';
 import { haptic } from '@/lib/haptics';
 import { Onboarding } from './onboarding';
+import { WeekPlanner } from './week-planner';
 
 declare const __TRIROX_STORAGE_MODE__: 'api' | 'local';
 
@@ -641,68 +642,14 @@ export default function TrainingApp() {
                   />
                 </div>
               </SectionHead>
-              <div className="week-list">
-                {week.map((date) => {
-                  const list = state.workouts
-                    .filter((w) => w.date === date)
-                    .sort((a, b) => a.time.localeCompare(b.time));
-                  return (
-                    <div
-                      key={date}
-                      className={
-                        'week-day ' + (date === today ? 'current' : '')
-                      }
-                    >
-                      <div className="day-label">
-                        <strong>{Number(date.slice(-2))}</strong>
-                        <span>
-                          週
-                          {
-                            '日一二三四五六'[
-                              new Date(date + 'T12:00:00').getDay()
-                            ]
-                          }
-                        </span>
-                        {date === today && <i />}
-                      </div>
-                      <div>
-                        {list.length ? (
-                          list.map((w) => (
-                            <button
-                              className="week-workout"
-                              key={w.id}
-                              onClick={() => open('workout', w.id)}
-                            >
-                              <SportIcon sport={w.sport} />
-                              <span>
-                                <strong>{w.title}</strong>
-                                <small>
-                                  {w.minutes
-                                    ? w.minutes + ' 分鐘 · Zone ' + w.zone
-                                    : '休息與恢復'}
-                                </small>
-                              </span>
-                              {completed(w) ? (
-                                <Check size={18} className="positive" />
-                              ) : (
-                                <ChevronRight size={18} />
-                              )}
-                            </button>
-                          ))
-                        ) : (
-                          <button
-                            className="unscheduled"
-                            onClick={() => open('newWorkout', date)}
-                          >
-                            尚未安排
-                            <Plus size={18} />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <WeekPlanner
+                dates={week}
+                today={today}
+                state={state}
+                busy={busy}
+                open={open}
+                save={save}
+              />
               <button
                 className="secondary full"
                 onClick={() => open('generate', start)}
