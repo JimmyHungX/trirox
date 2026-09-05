@@ -94,6 +94,108 @@ const labels: Record<string, string> = {
   generate: '建立週課表',
   timer: '訓練計時',
 };
+
+function TodayTrainingShortcut({
+  active,
+  restricted,
+  completedToday,
+  restToday,
+  today,
+  open,
+}: {
+  active?: Workout;
+  restricted: boolean;
+  completedToday: Workout[];
+  restToday?: Workout;
+  today: string;
+  open: (type: string, id?: string) => void;
+}) {
+  if (active)
+    return (
+      <button
+        className={`today-training-shortcut${
+          restricted ? ' is-restricted' : ''
+        }`}
+        data-haptic={restricted ? undefined : 'light'}
+        onClick={() => open(restricted ? 'workout' : 'timer', active.id)}
+      >
+        <SportIcon sport={active.sport} />
+        <span className="today-training-copy">
+          <small>
+            {restricted
+              ? '今天需要先調整'
+              : `今天 · ${active.time} 快速開始`}
+          </small>
+          <strong>{active.title}</strong>
+          <span>
+            {sportNames[active.sport]} · {active.minutes} 分鐘 · Zone{' '}
+            {active.zone}
+          </span>
+        </span>
+        <span className="today-training-action" aria-hidden="true">
+          {restricted ? (
+            <ChevronRight size={21} />
+          ) : (
+            <Play size={21} fill="currentColor" />
+          )}
+        </span>
+      </button>
+    );
+
+  if (completedToday.length)
+    return (
+      <button
+        className="today-training-shortcut is-complete"
+        onClick={() => open('workout', completedToday[0].id)}
+      >
+        <Check size={24} />
+        <span className="today-training-copy">
+          <small>今天</small>
+          <strong>今日訓練已完成</strong>
+          <span>{completedToday.length} 堂訓練已回報</span>
+        </span>
+        <span className="today-training-action" aria-hidden="true">
+          <ChevronRight size={21} />
+        </span>
+      </button>
+    );
+
+  if (restToday)
+    return (
+      <button
+        className="today-training-shortcut is-rest"
+        onClick={() => open('workout', restToday.id)}
+      >
+        <SportIcon sport="Rest" />
+        <span className="today-training-copy">
+          <small>今天</small>
+          <strong>{restToday.title}</strong>
+          <span>恢復日 · 查看今日安排</span>
+        </span>
+        <span className="today-training-action" aria-hidden="true">
+          <ChevronRight size={21} />
+        </span>
+      </button>
+    );
+
+  return (
+    <button
+      className="today-training-shortcut is-empty"
+      onClick={() => open('newWorkout', today)}
+    >
+      <Plus size={24} />
+      <span className="today-training-copy">
+        <small>今天</small>
+        <strong>尚未安排訓練</strong>
+        <span>新增一堂今日課表</span>
+      </span>
+      <span className="today-training-action" aria-hidden="true">
+        <Plus size={21} />
+      </span>
+    </button>
+  );
+}
+
 export default function TrainingApp() {
   const [state, setState] = useState<AppState | null>(null),
     [revision, setRevision] = useState(-1),
@@ -400,6 +502,14 @@ export default function TrainingApp() {
       <main className={'main-content ' + tab} key={tab}>
         {tab === 'today' && (
           <>
+            <TodayTrainingShortcut
+              active={active}
+              restricted={Boolean(suggestion?.restricted)}
+              completedToday={completedToday}
+              restToday={restToday}
+              today={today}
+              open={open}
+            />
             <section className="readiness-section">
               <SectionHead title="今天狀態">
                 <IconButton
@@ -586,83 +696,14 @@ export default function TrainingApp() {
                 onClick={() => open('newWorkout')}
               />
             </div>
-            {active ? (
-              <button
-                className={`today-plan-shortcut${
-                  suggestion?.restricted ? ' is-restricted' : ''
-                }`}
-                data-haptic={suggestion?.restricted ? undefined : 'light'}
-                onClick={() =>
-                  open(suggestion?.restricted ? 'workout' : 'timer', active.id)
-                }
-              >
-                <SportIcon sport={active.sport} />
-                <span className="today-plan-copy">
-                  <small>
-                    {suggestion?.restricted
-                      ? '今天需要先調整'
-                      : `今天 · ${active.time} 快速開始`}
-                  </small>
-                  <strong>{active.title}</strong>
-                  <span>
-                    {sportNames[active.sport]} · {active.minutes} 分鐘 · Zone{' '}
-                    {active.zone}
-                  </span>
-                </span>
-                <span className="today-plan-action" aria-hidden="true">
-                  {suggestion?.restricted ? (
-                    <ChevronRight size={21} />
-                  ) : (
-                    <Play size={21} fill="currentColor" />
-                  )}
-                </span>
-              </button>
-            ) : completedToday.length ? (
-              <button
-                className="today-plan-shortcut is-complete"
-                onClick={() => open('workout', completedToday[0].id)}
-              >
-                <Check size={24} />
-                <span className="today-plan-copy">
-                  <small>今天</small>
-                  <strong>今日訓練已完成</strong>
-                  <span>{completedToday.length} 堂訓練已回報</span>
-                </span>
-                <span className="today-plan-action" aria-hidden="true">
-                  <ChevronRight size={21} />
-                </span>
-              </button>
-            ) : restToday ? (
-              <button
-                className="today-plan-shortcut is-rest"
-                onClick={() => open('workout', restToday.id)}
-              >
-                <SportIcon sport="Rest" />
-                <span className="today-plan-copy">
-                  <small>今天</small>
-                  <strong>{restToday.title}</strong>
-                  <span>恢復日 · 查看今日安排</span>
-                </span>
-                <span className="today-plan-action" aria-hidden="true">
-                  <ChevronRight size={21} />
-                </span>
-              </button>
-            ) : (
-              <button
-                className="today-plan-shortcut is-empty"
-                onClick={() => open('newWorkout', today)}
-              >
-                <Plus size={24} />
-                <span className="today-plan-copy">
-                  <small>今天</small>
-                  <strong>尚未安排訓練</strong>
-                  <span>新增一堂今日課表</span>
-                </span>
-                <span className="today-plan-action" aria-hidden="true">
-                  <Plus size={21} />
-                </span>
-              </button>
-            )}
+            <TodayTrainingShortcut
+              active={active}
+              restricted={Boolean(suggestion?.restricted)}
+              completedToday={completedToday}
+              restToday={restToday}
+              today={today}
+              open={open}
+            />
             <section className="plan-summary">
               <div>
                 <span className="eyebrow">本週訓練</span>

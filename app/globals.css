@@ -1171,7 +1171,7 @@ section {
 .page-title .muted {
   font-size: 13px;
 }
-.today-plan-shortcut {
+.today-training-shortcut {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) 44px;
   align-items: center;
@@ -1186,21 +1186,21 @@ section {
   color: var(--foreground);
   text-align: left;
 }
-.today-plan-shortcut > svg {
+.today-training-shortcut > svg {
   color: var(--primary);
 }
-.today-plan-copy {
+.today-training-copy {
   display: flex;
   flex-direction: column;
   min-width: 0;
   gap: 3px;
 }
-.today-plan-copy small {
+.today-training-copy small {
   color: var(--primary);
   font-size: 11px;
   font-weight: 700;
 }
-.today-plan-copy strong {
+.today-training-copy strong {
   overflow: hidden;
   color: #183328;
   font-size: 16px;
@@ -1208,14 +1208,14 @@ section {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.today-plan-copy > span {
+.today-training-copy > span {
   overflow: hidden;
   color: #5d6b64;
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.today-plan-action {
+.today-training-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1225,26 +1225,26 @@ section {
   background: var(--primary);
   color: #fff;
 }
-.today-plan-shortcut.is-restricted {
+.today-training-shortcut.is-restricted {
   border-color: #ead8b8 !important;
   background: #fbf5e9 !important;
 }
-.today-plan-shortcut.is-restricted .today-plan-copy small,
-.today-plan-shortcut.is-restricted > svg {
+.today-training-shortcut.is-restricted .today-training-copy small,
+.today-training-shortcut.is-restricted > svg {
   color: #8a5e18;
 }
-.today-plan-shortcut.is-restricted .today-plan-action {
+.today-training-shortcut.is-restricted .today-training-action {
   background: #8a5e18;
 }
-.today-plan-shortcut.is-complete,
-.today-plan-shortcut.is-rest,
-.today-plan-shortcut.is-empty {
+.today-training-shortcut.is-complete,
+.today-training-shortcut.is-rest,
+.today-training-shortcut.is-empty {
   border-color: var(--border) !important;
   background: #f7f8f7 !important;
 }
-.today-plan-shortcut.is-complete .today-plan-action,
-.today-plan-shortcut.is-rest .today-plan-action,
-.today-plan-shortcut.is-empty .today-plan-action {
+.today-training-shortcut.is-complete .today-training-action,
+.today-training-shortcut.is-rest .today-training-action,
+.today-training-shortcut.is-empty .today-training-action {
   background: #e5ebe7;
   color: var(--primary);
 }
