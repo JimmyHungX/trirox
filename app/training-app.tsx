@@ -20,6 +20,7 @@ import {
   Settings,
   Pencil,
   Check,
+  Activity,
   Heart,
   Moon,
   Battery,
@@ -241,7 +242,12 @@ export default function TrainingApp() {
       <main className="app startup">
         <div className="wordmark">TRIROX</div>
         <div className="startup-content">
-          <HeartPulse size={36} />
+          <div
+            className={`startup-mark${error ? ' is-error' : ''}`}
+            aria-label="TRIROX"
+          >
+            <Activity size={44} strokeWidth={2.25} />
+          </div>
           <h1>{error ? '暫時無法連線' : '讀取訓練紀錄'}</h1>
           <p>{error || '正在準備你的今日課表'}</p>
           {error && (

@@ -1851,12 +1851,38 @@ section {
   gap: 20px;
   text-align: center;
 }
+.startup-mark {
+  width: 78px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 10px 24px rgb(34 89 64 / 18%);
+  animation: startup-breathe 1.35s ease-in-out infinite;
+}
+.startup-mark.is-error {
+  animation: none;
+}
 .startup-content h1 {
   font-size: 24px;
 }
 .startup-content p {
   color: #888;
   max-width: 320px;
+}
+@keyframes startup-breathe {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.82;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 @keyframes enter {
   from {
