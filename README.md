@@ -101,17 +101,6 @@ npm run build:vercel
 - 原始碼：[github.com/JimmyHungX/trirox](https://github.com/JimmyHungX/trirox)
 - 評選影片：尚未提供
 
-## 公開提交檢查
-
-- [x] GitHub 儲存庫可由無痕視窗直接開啟。
-- [x] 儲存庫包含可辨識的前端、API、資料模型、演算法、測試與部署實作。
-- [x] README 包含問題、功能、架構、技術、執行方式與限制。
-- [x] 已加入明確的 [`LICENSE`](LICENSE) 檔案。
-- [x] 第三方套件、模型、資料與素材的來源及授權已於下方揭露。
-- [x] 已檢查版本控制中的檔案，未發現 API Key、Token、密碼或真實使用者個人資料。
-
-以上連結與內容於 2026-09-06 以未登入請求及版本控制檔案掃描確認；部署狀態後續仍可能受平台設定影響。
-
 ## 限制與未來工作
 
 - 目前是行動優先 Web MVP，不是原生 iOS 或 App Store 應用程式。
