@@ -354,8 +354,14 @@ export default function TrainingApp() {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setPanel(null);
   }
-  const open = (type: string, id?: string, timedResult?: TimedWorkoutResult) =>
+  const open = (
+    type: string,
+    id?: string,
+    timedResult?: TimedWorkoutResult,
+  ) => {
+    setToast('');
     setPanel({ type, id, timedResult });
+  };
   if (!state)
     return (
       <main className="app startup">
