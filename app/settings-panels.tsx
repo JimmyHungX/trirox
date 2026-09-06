@@ -393,6 +393,35 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
         <span>語言</span>
         <strong>繁體中文</strong>
       </div>
+      <div className="setting-static">
+        <span>目前資料模式</span>
+        <strong>{state.demo ? '測試資料' : '個人資料'}</strong>
+      </div>
+      {state.demo ? (
+        <>
+          <p className="caption">
+            測試資料包含 31
+            天身體紀錄、歷史訓練、本週課表與賽事，可用來檢查完整介面。
+          </p>
+          <button className="secondary full" onClick={() => setConfirm(true)}>
+            <UserIcon />
+            開始我的個人紀錄
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="caption">
+            快速載入完整測試資料。切換前可先匯出備份，避免遺失目前的個人紀錄。
+          </p>
+          <button
+            className="secondary full"
+            onClick={() => setDemoConfirm(true)}
+          >
+            <Database size={18} />
+            使用測試資料
+          </button>
+        </>
+      )}
       <button
         className="secondary full"
         type="button"
@@ -433,32 +462,6 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
         <Download size={18} />
         匯出資料備份
       </button>
-      {state.demo && (
-        <>
-          <p className="caption">
-            目前是示範資料。開始個人紀錄會移除示範的賽事、課表與身體紀錄，保留你的訓練偏好。
-          </p>
-          <button className="secondary full" onClick={() => setConfirm(true)}>
-            <UserIcon />
-            開始我的個人紀錄
-          </button>
-        </>
-      )}
-      {!state.demo && (
-        <>
-          <p className="caption">
-            示範資料包含 31
-            天身體紀錄、歷史訓練、本週課表與賽事，可用來檢查完整介面。
-          </p>
-          <button
-            className="secondary full"
-            onClick={() => setDemoConfirm(true)}
-          >
-            <Database size={18} />
-            載入完整示範資料
-          </button>
-        </>
-      )}
       <hr />
       <h3>加入 iPhone 主畫面</h3>
       <p className="caption">
@@ -479,7 +482,7 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
         open={confirm}
         setOpen={setConfirm}
         title="開始個人紀錄？"
-        description="將移除目前示範資料，保留個人資料與訓練設定。建議先匯出備份。"
+        description="將移除目前測試資料，保留個人資料與訓練設定。建議先匯出備份。"
         action="開始個人紀錄"
         busy={busy}
         onConfirm={async () => {
@@ -499,12 +502,13 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
       <Confirm
         open={demoConfirm}
         setOpen={setDemoConfirm}
-        title="載入示範資料？"
-        description="目前的個人資料、課表與紀錄將由完整示範資料取代。需要保留時請先匯出備份。"
-        action="載入示範資料"
+        title="使用測試資料？"
+        description="目前的個人資料、課表與紀錄將由完整測試資料取代。需要保留時請先匯出備份。"
+        action="使用測試資料"
+        destructive
         busy={busy}
         onConfirm={async () => {
-          if (await save(seed(), '已載入完整示範資料')) close();
+          if (await save(seed(), '已切換為測試資料')) close();
         }}
       />
     </div>

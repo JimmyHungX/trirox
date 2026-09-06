@@ -81,6 +81,7 @@ export function Confirm({
   onConfirm,
   busy,
   haptic = 'light',
+  destructive: destructiveOverride,
 }: {
   open: boolean;
   setOpen: (v: boolean) => void;
@@ -90,8 +91,9 @@ export function Confirm({
   onConfirm: () => void;
   busy: boolean;
   haptic?: 'light' | 'medium';
+  destructive?: boolean;
 }) {
-  const destructive = action.includes('刪除');
+  const destructive = destructiveOverride ?? action.includes('刪除');
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
