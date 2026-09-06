@@ -208,6 +208,7 @@ export default function TrainingApp() {
     [tab, setTab] = useState('today'),
     [panel, setPanel] = useState<PanelState | null>(null),
     [toast, setToast] = useState(''),
+    [onboardingPreview, setOnboardingPreview] = useState(false),
     [offset, setOffset] = useState(0);
   const gate = useRef(false);
   const latest = useRef(state);
@@ -267,6 +268,9 @@ export default function TrainingApp() {
   async function reload() {
     setError('');
     try {
+      setOnboardingPreview(
+        new URLSearchParams(location.search).get('onboarding') === '1',
+      );
       if (__TRIROX_STORAGE_MODE__ === 'local') {
         const stored = localStorage.getItem(localStateKey);
         const parsed = stored ? (JSON.parse(stored) as unknown) : null;
@@ -362,6 +366,13 @@ export default function TrainingApp() {
     setToast('');
     setPanel({ type, id, timedResult });
   };
+  function exitOnboardingPreview() {
+    if (!onboardingPreview) return;
+    const url = new URL(location.href);
+    url.searchParams.delete('onboarding');
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+    setOnboardingPreview(false);
+  }
   if (!state)
     return (
       <main className="app startup">
@@ -384,13 +395,22 @@ export default function TrainingApp() {
         </div>
       </main>
     );
-  if (state.demo && state.onboardingDismissed === false)
+  if (onboardingPreview || (state.demo && state.onboardingDismissed === false))
     return (
       <Onboarding
-        save={save}
+        save={async (next, message) => {
+          const saved = await save(next, message);
+          if (saved) exitOnboardingPreview();
+          return saved;
+        }}
         busy={busy}
         error={error}
         onExplore={async () => {
+          if (onboardingPreview) {
+            exitOnboardingPreview();
+            setToast('已返回目前資料');
+            return;
+          }
           await save({ ...state, onboardingDismissed: true }, '已開啟示範資料');
         }}
       />

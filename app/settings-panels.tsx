@@ -8,6 +8,7 @@ import {
   Trash2,
   Smartphone,
   Database,
+  RotateCcw,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -392,6 +393,16 @@ export function AppSettings({ state, save, busy, close, notify }: PanelProps) {
         <span>語言</span>
         <strong>繁體中文</strong>
       </div>
+      <button
+        className="secondary full"
+        type="button"
+        onClick={() => {
+          location.href = '/?onboarding=1';
+        }}
+      >
+        <RotateCcw size={18} />
+        重新查看首次使用流程
+      </button>
       <button
         className="primary full"
         data-haptic="light"
