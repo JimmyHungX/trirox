@@ -55,6 +55,7 @@ import {
   load,
   sportNames,
   type AppState,
+  type TimedWorkoutResult,
   type Workout,
 } from '@/lib/training';
 import { Panel } from './panels';
@@ -68,7 +69,11 @@ import { WeekPlanner } from './week-planner';
 declare const __TRIROX_STORAGE_MODE__: 'api' | 'local';
 
 const localStateKey = 'trirox-state-v1';
-export type PanelState = { type: string; id?: string };
+export type PanelState = {
+  type: string;
+  id?: string;
+  timedResult?: TimedWorkoutResult;
+};
 const navs = [
   { id: 'today', label: '今日', icon: Home },
   { id: 'plan', label: '計畫', icon: CalendarDays },
@@ -349,7 +354,8 @@ export default function TrainingApp() {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setPanel(null);
   }
-  const open = (type: string, id?: string) => setPanel({ type, id });
+  const open = (type: string, id?: string, timedResult?: TimedWorkoutResult) =>
+    setPanel({ type, id, timedResult });
   if (!state)
     return (
       <main className="app startup">

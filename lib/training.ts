@@ -13,6 +13,10 @@ export type Workout = {
   order?: number;
   adjusted?: boolean;
 };
+export type TimedWorkoutResult = {
+  elapsedSeconds: number;
+  distanceKm: number;
+};
 export type Log = {
   id: string;
   planId: string;
@@ -153,6 +157,26 @@ export function firstUseState(today = dayKey()) {
 }
 export function load(log: Log) {
   return log.minutes * model.zone[log.zone];
+}
+export function reportValues(
+  workout: Workout,
+  timedResult?: TimedWorkoutResult,
+) {
+  if (!timedResult)
+    return {
+      minutes: workout.minutes || 45,
+      distance: workout.distance,
+    };
+  const elapsedSeconds = Number.isFinite(timedResult.elapsedSeconds)
+    ? Math.max(0, timedResult.elapsedSeconds)
+    : 0;
+  const distanceKm = Number.isFinite(timedResult.distanceKm)
+    ? Math.max(0, timedResult.distanceKm)
+    : 0;
+  return {
+    minutes: Math.max(1, Math.ceil(elapsedSeconds / 60)),
+    distance: Number(distanceKm.toFixed(2)),
+  };
 }
 export function cns(values: number[], current?: number) {
   const baseline = values.slice(-30);

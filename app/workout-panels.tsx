@@ -28,6 +28,7 @@ import {
   conflict,
   generateWeek,
   addDays,
+  reportValues,
 } from '@/lib/training';
 import {
   routeDistanceKm,
@@ -394,22 +395,26 @@ export function ReportPanel({
   close,
 }: PanelProps) {
   const w = state.workouts.find((x) => x.id === panel.id);
-  const [log, setLog] = useState<Log>(
-    () =>
-      state.logs.find((l) => l.planId === panel.id) ?? {
-        id: uid(),
-        planId: panel.id ?? '',
-        date: w?.date ?? dayKey(),
-        sport: w?.sport ?? 'Run',
-        minutes: w?.minutes || 45,
-        distance: w?.distance ?? 0,
-        zone: w?.zone ?? 2,
-        rpe: 5,
-        fatigue: 2,
-        soreness: [],
-        note: '',
-      },
-  );
+  const [log, setLog] = useState<Log>(() => {
+    const existing = state.logs.find((l) => l.planId === panel.id);
+    if (existing) return existing;
+    const values = w
+      ? reportValues(w, panel.timedResult)
+      : { minutes: 45, distance: 0 };
+    return {
+      id: uid(),
+      planId: panel.id ?? '',
+      date: w?.date ?? dayKey(),
+      sport: w?.sport ?? 'Run',
+      minutes: values.minutes,
+      distance: values.distance,
+      zone: w?.zone ?? 2,
+      rpe: 5,
+      fatigue: 2,
+      soreness: [],
+      note: '',
+    };
+  });
   if (!w || w.date > dayKey())
     return (
       <div className="panel-body">
@@ -1037,8 +1042,14 @@ export function TimerPanel({ state, panel, open }: PanelProps) {
           className="secondary timer-end"
           data-haptic="medium"
           onClick={() => {
+            const finalElapsed = running
+              ? acc.current + Math.floor((Date.now() - start.current) / 1000)
+              : elapsed;
             if (running) pause();
-            open('report', w.id);
+            open('report', w.id, {
+              elapsedSeconds: finalElapsed,
+              distanceKm: recordedDistanceKm,
+            });
           }}
         >
           <Square size={18} fill="currentColor" />

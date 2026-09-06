@@ -10,6 +10,7 @@ import {
   dayKey,
   addDays,
   muscleLoads,
+  reportValues,
 } from '../lib/training.ts';
 const today = '2026-09-05';
 test('today soreness raises related rolling muscle load', () => {
@@ -41,6 +42,28 @@ test('future logs never enter acute load', () => {
     { date: addDays(today, 1), minutes: 999, zone: 5 },
   ];
   assert.equal(acwr(logs, today).acute, 40 / 7);
+});
+test('timer results prefill the workout report with actual values', () => {
+  const workout = {
+    id: 'timed-workout',
+    date: today,
+    time: '07:00',
+    sport: 'Run',
+    title: 'Timed run',
+    minutes: 90,
+    distance: 18,
+    zone: 2,
+    version: 1,
+  };
+  assert.deepEqual(reportValues(workout), { minutes: 90, distance: 18 });
+  assert.deepEqual(
+    reportValues(workout, { elapsedSeconds: 61, distanceKm: 1.234 }),
+    { minutes: 2, distance: 1.23 },
+  );
+  assert.deepEqual(
+    reportValues(workout, { elapsedSeconds: 0, distanceKm: 0 }),
+    { minutes: 1, distance: 0 },
+  );
 });
 test('flagged dates are excluded from attribution loads', () => {
   const logs = [

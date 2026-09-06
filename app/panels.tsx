@@ -13,6 +13,7 @@ import {
   type CheckIn,
   type Part,
   type Race,
+  type TimedWorkoutResult,
   dayKey,
   daysUntil,
   exclusionTags,
@@ -43,7 +44,7 @@ export type PanelProps = {
   state: AppState;
   save: (next: AppState, message?: string) => Promise<boolean>;
   busy: boolean;
-  open: (type: string, id?: string) => void;
+  open: (type: string, id?: string, timedResult?: TimedWorkoutResult) => void;
   close: () => void;
   notify: (message: string) => void;
 };
