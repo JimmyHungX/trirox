@@ -2584,6 +2584,7 @@ body {
 .onboarding-shell {
   width: 100%;
   max-width: 500px;
+  height: 100dvh;
   min-height: 100dvh;
   margin: auto;
   background: var(--background);
@@ -2591,6 +2592,10 @@ body {
     calc(96px + env(safe-area-inset-bottom));
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 .onboarding-header {
   height: 72px;

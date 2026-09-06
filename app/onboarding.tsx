@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
   Apple,
@@ -46,6 +46,7 @@ const goalOptions: { value: 'none' | Race['type']; label: string }[] = [
 
 export function Onboarding({ save, busy, error, onExplore }: Props) {
   const today = dayKey();
+  const shellRef = useRef<HTMLElement | null>(null);
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [goal, setGoal] = useState<'none' | Race['type']>('HYROX');
@@ -90,6 +91,10 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
             : step === 6
               ? !hasInjury || injuryNote.trim().length > 0
               : true;
+
+  useEffect(() => {
+    shellRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+  }, [step]);
 
   async function finish() {
     const personal = seed(today, false);
@@ -153,7 +158,7 @@ export function Onboarding({ save, busy, error, onExplore }: Props) {
   }
 
   return (
-    <main className="onboarding-shell">
+    <main ref={shellRef} className="onboarding-shell">
       <header className="onboarding-header">
         {step === 0 ? (
           <span className="wordmark">TRIROX</span>
